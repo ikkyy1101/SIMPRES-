@@ -159,14 +159,15 @@ class DashboardController extends Controller
             ];
         }
 
-        $prestasiPerTahun = Prestasi::select(
+        $rekapPerTahun = Prestasi::select(
             'prestasi.tahun_perolehan',
             DB::raw('COUNT(*) as total')
         )
             ->join('users', 'users.id', '=', 'prestasi.id_mahasiswa')
             ->groupBy('prestasi.tahun_perolehan')
             ->orderBy('prestasi.tahun_perolehan', 'asc')
-            ->get();
+            ->pluck('total', 'prestasi.tahun_perolehan')
+            ->toArray();
 
         $prestasiList = $query->orderByDesc('prestasi.created_at')->paginate(15)->withQueryString();
 

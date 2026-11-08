@@ -10,13 +10,8 @@
             <p class="text-muted mb-0 small">Informasi lengkap pengajuan prestasi dan status verifikasi</p>
         </div>
         <div class="d-flex gap-2">
-            @can('update', $prestasi)
-                <a href="{{ route('mahasiswa.prestasi.edit', $prestasi) }}" class="btn btn-warning rounded-3 fw-semibold">
-                    <i class="bi bi-pencil-square me-1"></i> Perbaiki Data
-                </a>
-            @endcan
-            <a href="{{ route('mahasiswa.prestasi.index') }}" class="btn btn-outline-secondary rounded-3">
-                <i class="bi bi-arrow-left me-1"></i> Kembali ke Riwayat
+            <a href="{{ route('pimpinan.prestasi.index') }}" class="btn btn-outline-secondary rounded-3">
+                <i class="bi bi-arrow-left me-1"></i> Kembali ke Data Prestasi
             </a>
         </div>
     </div>

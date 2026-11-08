@@ -43,6 +43,35 @@ class BerkasPrestasiService
     }
 
     /**
+     * Memindahkan berkas sertifikat sementara ke folder permanen prestasi.
+     *
+     * @param  array<int,string>  $baru
+     */
+    public function simpanSertifikatDariPath(
+        Prestasi $prestasi,
+        string $tempPath,
+        string $originalName,
+        array &$baru
+    ): void {
+        $targetDir = 'prestasi/'.$prestasi->id.'/sertifikat';
+        $filename = basename($tempPath);
+        $finalPath = $targetDir.'/'.$filename;
+
+        Storage::disk(self::DISK)->makeDirectory($targetDir);
+        if (Storage::disk(self::DISK)->exists($tempPath)) {
+            Storage::disk(self::DISK)->move($tempPath, $finalPath);
+        }
+
+        $baru[] = $finalPath;
+
+        $prestasi->sertifikat()->create([
+            'file_sertifikat' => $finalPath,
+            'nama_file' => $originalName,
+            'tgl_upload' => now()->toDateString(),
+        ]);
+    }
+
+    /**
      * @param  array<int,UploadedFile>  $files
      * @param  array<int,string|null>  $keterangan
      * @param  array<int,string>  $baru

@@ -9,305 +9,464 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --simpres-olive: #5b6743;
-            --simpres-olive-dark: #454f32;
-            --simpres-maroon: #7a1c2c;
-            --simpres-maroon-dark: #581420;
+            --simpres-olive-dark: #3e3b16;
+            --simpres-olive: #54511a;
+            --simpres-olive-brand: #535020;
+            --simpres-neutral: #dedee5;
+            --simpres-neutral-input: #f1f2f6;
+            /* 5-Color Stop Figma Gradient (#54511A, #DED987, #66621F, #6A6621, #BAB33A) */
+            --simpres-figma-gradient: linear-gradient(90deg, #54511a 0%, #ded987 5.77%, #66621f 17.31%, #6a6621 21.15%, #bab33a 100%);
+        }
+
+        .top-accent-line {
+            height: 3px;
+            width: 100%;
+            background: var(--simpres-figma-gradient);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
+            color: #100e0e;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
         }
 
-        .login-card-container {
-            max-width: 980px;
+        .auth-split-wrapper {
             width: 100%;
-            background: #ffffff;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+            min-height: 100vh;
             display: flex;
-            min-height: 580px;
+            background: #ffffff;
         }
 
-        /* Left Side: Brand Banner (Lap. hal. 102-103) */
-        .login-left {
+        /* Sisi Kiri: Banner Hero Kampus sesuai Figma Node 125:209 */
+        .auth-hero-pane {
             width: 50%;
-            background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 40px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(83, 80, 32, 0.94) 0%, rgba(62, 59, 22, 0.96) 100%),
+                        url("{{ asset('images/auth/bg-login.png') }}") center center / cover no-repeat;
+            padding: 56px 64px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border-right: 1px solid #eef2f6;
-        }
-
-        .login-left-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .brand-badge {
-            width: 48px;
-            height: 48px;
-            background: var(--simpres-olive);
             color: #ffffff;
-            border-radius: 12px;
+        }
+
+        .auth-brand-logos {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(91, 103, 67, 0.3);
+            gap: 16px;
         }
 
-        .login-left h3 {
-            font-weight: 800;
-            color: #1e293b;
-            font-size: 24px;
-            line-height: 1.3;
-        }
-
-        .login-left p {
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .building-illustration {
-            width: 100%;
-            height: 250px;
-            border-radius: 16px;
-            overflow: hidden;
+        .auth-logo-img {
+            height: 72px;
+            width: auto;
+            object-fit: contain;
             background: #ffffff;
-            border: 2px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
         }
 
-        /* Right Side: Form (Lap. hal. 102-103) */
-        .login-right {
-            width: 50%;
-            padding: 44px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        .auth-hero-content {
+            margin-top: 40px;
+            max-width: 600px;
         }
 
-        .login-title {
+        .hero-title-first {
+            font-size: 38px;
             font-weight: 800;
-            font-size: 26px;
-            color: #1e293b;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .form-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #475569;
+            line-height: 1.15;
+            color: #fef08a;
             margin-bottom: 6px;
         }
 
-        .form-control, .form-select {
-            border-radius: 12px;
-            border: 1.5px solid #cbd5e1;
-            padding: 11px 16px;
+        .hero-title-second {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .hero-title-faculty {
+            font-size: 22px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.3;
+            margin-bottom: 24px;
+        }
+
+        .auth-divider-line {
+            width: 160px;
+            height: 4px;
+            background-color: #fef08a;
+            border-radius: 4px;
+            margin-bottom: 28px;
+        }
+
+        .auth-hero-desc {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.6;
+        }
+
+        .auth-hero-footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Sisi Kanan: Form Login sesuai Figma Node 125:209 */
+        .auth-form-pane {
+            width: 50%;
+            padding: 48px 68px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+
+        .login-header-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #100e0e;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .login-header-subtitle {
             font-size: 14px;
-            transition: all 0.2s;
+            color: #64748b;
+            margin-bottom: 28px;
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--simpres-olive);
-            box-shadow: 0 0 0 3px rgba(91, 103, 67, 0.15);
+        .form-label-figma {
+            font-size: 15px;
+            font-weight: 700;
+            color: #100e0e;
+            margin-bottom: 8px;
+            display: block;
         }
 
-        .password-toggle {
-            cursor: pointer;
+        .form-control-login {
+            background-color: #dedee5;
+            border: 1.5px solid transparent;
+            border-radius: 12px;
+            min-height: 52px;
+            font-size: 15px;
+            padding: 12px 18px;
+            color: #100e0e;
+            transition: all 0.2s ease;
+        }
+
+        .form-control-login:focus {
+            background-color: #ffffff;
+            border-color: #535020;
+            box-shadow: 0 0 0 0.2rem rgba(83, 80, 32, 0.15);
+            outline: none;
+        }
+
+        .form-select-login {
+            background-color: #dedee5;
+            border: 1.5px solid transparent;
+            border-radius: 12px;
+            min-height: 52px;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            color: #100e0e;
+            transition: all 0.2s ease;
+        }
+
+        .form-select-login:focus {
+            background-color: #ffffff;
+            border-color: #535020;
+            box-shadow: 0 0 0 0.2rem rgba(83, 80, 32, 0.15);
+            outline: none;
+        }
+
+        .password-field-wrapper {
+            position: relative;
+        }
+
+        .password-toggle-btn {
             position: absolute;
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 16px;
-        }
-
-        .btn-login {
-            background-color: var(--simpres-olive);
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 15px;
-            padding: 12px;
-            border-radius: 12px;
+            background: none;
             border: none;
-            width: 100%;
-            transition: all 0.2s;
-            margin-top: 10px;
+            color: #64748b;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
         }
 
-        .btn-login:hover {
-            background-color: var(--simpres-olive-dark);
+        .password-toggle-btn:hover {
+            color: #535020;
+        }
+
+        /* Tombol Login sesuai Figma Node 14:35 */
+        .btn-figma-submit {
+            background-color: #535020;
             color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            min-height: 52px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(83, 80, 32, 0.25);
         }
 
-        .divider {
+        .btn-figma-submit:hover {
+            background-color: #3e3b16;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(83, 80, 32, 0.35);
+        }
+
+        /* Pembatas ATAU sesuai Figma Node 38:113 */
+        .separator-atau-wrapper {
             display: flex;
             align-items: center;
-            text-align: center;
-            margin: 20px 0;
-            color: #94a3b8;
-            font-size: 13px;
+            gap: 16px;
+            margin: 24px 0;
         }
 
-        .divider::before, .divider::after {
-            content: '';
+        .separator-atau-line {
             flex: 1;
-            border-bottom: 1px solid #e2e8f0;
+            height: 1px;
+            background-color: #cbd5e1;
         }
 
-        .divider span {
-            padding: 0 12px;
-        }
-
-        .social-btn {
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #334155;
-            font-size: 13px;
+        .separator-atau-text {
+            font-size: 14px;
             font-weight: 600;
-            padding: 9px 12px;
+            color: #64748b;
+        }
+
+        /* Tombol SSO Alternatif sesuai Figma */
+        .btn-sso-figma {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            min-height: 46px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #100e0e;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 8px;
-            transition: all 0.2s;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
         }
 
-        .social-btn:hover {
-            background: #f8fafc;
+        .btn-sso-figma:hover {
+            background-color: #f8fafc;
             border-color: #94a3b8;
+            color: #100e0e;
         }
 
-        .quick-accounts {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-top: 18px;
-            border: 1px dashed #cbd5e1;
+        .sso-icon-brand {
+            font-size: 18px;
         }
 
-        .quick-account-btn {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            background: #fff;
-            color: #475569;
-            cursor: pointer;
-            margin-right: 4px;
-            margin-bottom: 4px;
+        .footer-note-link {
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 24px;
         }
 
-        .quick-account-btn:hover {
-            background: var(--simpres-olive);
-            color: #fff;
-            border-color: var(--simpres-olive);
+        .footer-note-link a {
+            color: #54511a;
+            font-weight: 700;
+            text-decoration: none;
         }
 
-        @media (max-width: 850px) {
-            .login-card-container {
+        .footer-note-link a:hover {
+            text-decoration: underline;
+        }
+
+        .quick-login-btn {
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease;
+        }
+
+        .quick-login-btn:hover {
+            border-color: #535020 !important;
+            background-color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(83, 80, 32, 0.15) !important;
+        }
+
+        /* Responsif Mobile & Tablet */
+        @media (max-width: 991.98px) {
+            .auth-split-wrapper {
                 flex-direction: column;
             }
-            .login-left, .login-right {
+            .auth-hero-pane {
                 width: 100%;
+                padding: 36px 20px;
+                min-height: 320px;
             }
-            .login-left {
-                border-right: none;
-                border-bottom: 1px solid #eef2f6;
-                padding: 30px;
+            .auth-form-pane {
+                width: 100%;
+                padding: 36px 20px;
             }
-            .login-right {
-                padding: 30px;
+            .hero-title-first, .hero-title-second {
+                font-size: 26px;
+            }
+            .login-header-title {
+                font-size: 28px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="login-card-container">
-        <!-- Left Side: Campus Brand Banner (Lap. hal. 102-103) -->
-        <div class="login-left">
-            <div>
-                <div class="login-left-logo">
-                    <div class="brand-badge">
-                        <i class="bi bi-mortarboard-fill"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-0" style="color: var(--simpres-olive);">SIMPRES</h5>
-                        <small class="text-muted fw-semibold">UIN Imam Bonjol Padang</small>
-                    </div>
-                </div>
-
-                <h3>Sistem Informasi<br>Manajemen Prestasi Mahasiswa</h3>
-                <p>Fakultas Sains Dan Teknologi Berbasis Web</p>
+    <div class="top-accent-line"></div>
+    <div class="auth-split-wrapper">
+        <!-- Kolom Kiri: Hero Banner Informasi & Identitas Kampus -->
+        <div class="auth-hero-pane">
+            <div class="auth-brand-logos">
+                <img src="{{ asset('images/auth/logo-uin.png') }}" alt="Logo UIN Imam Bonjol Padang" class="auth-logo-img">
+                <img src="{{ asset('images/auth/logo-simpres.png') }}" alt="Logo SIMPRES" class="auth-logo-img">
             </div>
 
-            <!-- Campus Graphic -->
-            <div class="building-illustration my-3">
-                <svg viewBox="0 0 400 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="220" fill="#f1f5f9" />
-                    <rect x="50" y="70" width="300" height="130" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4" />
-                    <rect x="140" y="80" width="120" height="120" fill="#5b6743" rx="4" />
-                    <rect x="160" y="100" width="80" height="100" fill="#38bdf8" rx="2" />
-                    <g fill="#94a3b8">
-                        <rect x="70" y="90" width="25" height="20" rx="2" />
-                        <rect x="105" y="90" width="25" height="20" rx="2" />
-                        <rect x="70" y="125" width="25" height="20" rx="2" />
-                        <rect x="105" y="125" width="25" height="20" rx="2" />
-                        <rect x="70" y="160" width="25" height="20" rx="2" />
-                        <rect x="105" y="160" width="25" height="20" rx="2" />
-
-                        <rect x="270" y="90" width="25" height="20" rx="2" />
-                        <rect x="305" y="90" width="25" height="20" rx="2" />
-                        <rect x="270" y="125" width="25" height="20" rx="2" />
-                        <rect x="305" y="125" width="25" height="20" rx="2" />
-                        <rect x="270" y="160" width="25" height="20" rx="2" />
-                        <rect x="305" y="160" width="25" height="20" rx="2" />
-                    </g>
-                    <text x="200" y="55" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" font-size="12" fill="#5b6743" text-anchor="middle">FAKULTAS SAINS DAN TEKNOLOGI</text>
-                    <rect x="0" y="200" width="400" height="20" fill="#4a5435" />
-                </svg>
+            <div class="auth-hero-content">
+                <div class="hero-title-first">Sistem Informasi</div>
+                <div class="hero-title-second">Manajemen Prestasi Mahasiswa</div>
+                <div class="hero-title-faculty">Fakultas Sains Dan Teknologi Berbasis Web</div>
+                <div class="auth-divider-line"></div>
+                <p class="auth-hero-desc">
+                    Silakan masuk menggunakan identitas resmi Anda. Pastikan peran pengguna sesuai dengan hak akses yang terdaftar di Fakultas Sains dan Teknologi UIN Imam Bonjol Padang.
+                </p>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between pt-2">
-                <a href="{{ route('pilih-peran') }}" class="text-decoration-none text-muted small fw-semibold">
-                    <i class="bi bi-arrow-left me-1"></i> Pilih Peran Lain
-                </a>
-                <small class="text-muted">&copy; 2026 SIMPRES</small>
+            <div class="auth-hero-footer">
+                &copy; {{ date('Y') }} FST UIN Imam Bonjol Padang &bull; SIMPRES Berbasis Web
             </div>
         </div>
 
-        <!-- Right Side: Login Form (Lap. hal. 102-103) -->
-        <div class="login-right">
-            <h2 class="login-title">Selamat Datang</h2>
+        <!-- Kolom Kanan: Form Login sesuai Figma 125:209 -->
+        <div class="auth-form-pane">
+            <h1 class="login-header-title">Selamat Datang</h1>
+            <p class="login-header-subtitle">Silakan masukkan informasi akun Anda untuk masuk ke sistem</p>
+
+            <!-- Bagian Login Cepat (Akun Demo) bertema Figma -->
+            <div class="p-3 rounded-4 mb-4" style="background-color: #f1f2f6; border: 1.5px dashed #cbd5e1;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge text-white px-2 py-1 rounded-2" style="background-color: #535020; font-size: 11px;">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> LOGIN CEPAT
+                        </span>
+                        <span class="fw-bold text-dark" style="font-size: 13px;">Uji Coba Demo</span>
+                    </div>
+                    <small class="text-muted" style="font-size: 11px;">1-Klik Masuk</small>
+                </div>
+                <p class="text-muted small mb-3" style="font-size: 12px; line-height: 1.4;">
+                    Pilih akun demo di bawah untuk langsung masuk tanpa perlu mengetik kredensial:
+                </p>
+
+                <div class="row g-2">
+                    <!-- Demo Mahasiswa -->
+                    <div class="col-12 col-md-4">
+                        <form action="{{ route('login.quick', ['role' => 'mahasiswa']) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
+                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
+                                        <i class="bi bi-mortarboard-fill"></i>
+                                    </div>
+                                    <div class="text-truncate">
+                                        <strong class="d-block text-dark small" style="font-size: 12px;">Mahasiswa</strong>
+                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Alya putri</small>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Demo Admin -->
+                    <div class="col-12 col-md-4">
+                        <form action="{{ route('login.quick', ['role' => 'admin']) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
+                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
+                                        <i class="bi bi-person-badge-fill"></i>
+                                    </div>
+                                    <div class="text-truncate">
+                                        <strong class="d-block text-dark small" style="font-size: 12px;">Admin</strong>
+                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Aura Maylia</small>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Demo Pemimpin -->
+                    <div class="col-12 col-md-4">
+                        <form action="{{ route('login.quick', ['role' => 'pimpinan']) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
+                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
+                                        <i class="bi bi-graph-up-arrow"></i>
+                                    </div>
+                                    <div class="text-truncate">
+                                        <strong class="d-block text-dark small" style="font-size: 12px;">Pemimpin</strong>
+                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Selvia P.</small>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             @if ($errors->any())
-                <div class="alert alert-danger py-2 px-3 rounded-3 small mb-3">
+                <div class="alert alert-danger border-0 rounded-3 p-3 mb-4 small" style="background-color: #fee2e2; color: #991b1b;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <strong>Terjadi Kesalahan:</strong>
+                    </div>
                     <ul class="mb-0 ps-3">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -319,93 +478,97 @@
             <form action="{{ route('login.process') }}" method="POST">
                 @csrf
 
-                <!-- Dropdown DAFTAR SEBAGAI (Lap. hal. 102-103) -->
+                <!-- Pilihan Peran (DAFTAR / MASUK SEBAGAI) sesuai Figma Node 12:7 & 10:5 -->
                 <div class="mb-3">
-                    <label class="form-label" for="roleSelect">DAFTAR SEBAGAI</label>
-                    <select name="role" id="roleSelect" class="form-select" required>
-                        <option value="mahasiswa" @selected(old('role', request('role')) === 'mahasiswa')>Mahasiswa</option>
-                        <option value="admin" @selected(old('role', request('role')) === 'admin')>Admin</option>
-                        <option value="pimpinan" @selected(old('role', request('role')) === 'pimpinan')>Pemimpin (Pimpinan Fakultas / Dekan)</option>
-                    </select>
-                </div>
-
-                <!-- Input Email/NIM/NIP -->
-                <div class="mb-3">
-                    <label class="form-label" for="loginInput">Email/NIM/NIP</label>
-                    <input type="text" name="login" id="loginInput" class="form-control" placeholder="Masukkan Email / NIM / NIP" value="{{ old('login') }}" required autofocus>
-                </div>
-
-                <!-- Input Kata Sandi -->
-                <div class="mb-3">
-                    <label class="form-label" for="passwordInput">Kata Sandi</label>
+                    <label for="role" class="form-label-figma">MASUK SEBAGAI</label>
                     <div class="position-relative">
-                        <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Masukkan Kata Sandi" required>
-                        <i class="bi bi-eye password-toggle" id="togglePasswordBtn" onclick="togglePasswordVisibility()"></i>
+                        <select name="role" id="role" class="form-select form-select-login @error('role') is-invalid @enderror" required>
+                            <option value="mahasiswa" @selected(request('role') === 'mahasiswa' || old('role') === 'mahasiswa')>Mahasiswa</option>
+                            <option value="admin" @selected(request('role') === 'admin' || old('role') === 'admin')>Admin</option>
+                            <option value="pimpinan" @selected(request('role') === 'pimpinan' || old('role') === 'pimpinan')>Pemimpin</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Ingat Saya & Lupa Kata Sandi -->
-                <div class="d-flex align-items-center justify-content-between mb-3">
+                <!-- Input Identitas Akun sesuai Figma Node 12:11 & 12:15 -->
+                <div class="mb-3">
+                    <label for="login" class="form-label-figma">Email / NIM / NIP</label>
+                    <input type="text" id="login" name="login"
+                           value="{{ old('login') }}"
+                           class="form-control form-control-login @error('login') is-invalid @enderror"
+                           placeholder="Masukkan Email Atau NIM"
+                           required autofocus autocomplete="username">
+                </div>
+
+                <!-- Input Kata Sandi sesuai Figma Node 12:19 & 12:21 -->
+                <div class="mb-3">
+                    <label for="password" class="form-label-figma">Kata Sandi</label>
+                    <div class="password-field-wrapper">
+                        <input type="password" id="password" name="password"
+                               class="form-control form-control-login pe-5 @error('password') is-invalid @enderror"
+                               placeholder="Masukkan Kata Sandi"
+                               required autocomplete="current-password">
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()" aria-label="Lihat Kata Sandi">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ingat Saya & Lupa Kata Sandi sesuai Figma Node 14:31 & 14:33 -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="rememberCheck" @checked(old('remember'))>
-                        <label class="form-check-label small text-muted" for="rememberCheck">
-                            Ingat Saya
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <label class="form-check-label small text-muted" for="remember">
+                            Ingat saya
                         </label>
                     </div>
-                    <a href="javascript:void(0)" onclick="alert('Silakan hubungi Administrator SIMPRES untuk mereset kata sandi akun Anda.')" class="text-decoration-none small text-muted">
+                    <a href="javascript:void(0)" onclick="alert('Silakan hubungi administrator fakultas untuk me-reset kata sandi akun Anda.')"
+                       class="small fw-semibold text-decoration-none" style="color: #4057a2;">
                         Lupa kata sandi?
                     </a>
                 </div>
 
-                <button type="submit" class="btn btn-login shadow-sm">
+                <!-- Tombol Submit LOGIN sesuai Figma Node 14:35 & 14:37 -->
+                <button type="submit" class="btn btn-figma-submit mb-3">
                     LOGIN
                 </button>
-            </form>
 
-            <div class="divider">
-                <span>Atau</span>
-            </div>
-
-            <!-- Alternatif Login (Google & Microsoft) (Lap. hal. 102-103) -->
-            <button type="button" class="social-btn" onclick="alert('Integrasi SSO Google Kampus akan segera aktif.')">
-                <i class="bi bi-google text-danger"></i> Login Dengan Google
-            </button>
-            <button type="button" class="social-btn" onclick="alert('Integrasi SSO Microsoft Office 365 akan segera aktif.')">
-                <i class="bi bi-microsoft text-primary"></i> Login Dengan Microsoft
-            </button>
-
-            <!-- Belum memiliki akun? Hubungi Admin -->
-            <div class="text-center mt-3">
-                <small class="text-muted">
-                    Belum Memiliki akun?
-                    <a href="javascript:void(0)" onclick="alert('Pendaftaran akun mahasiswa baru dilakukan oleh pihak Akademik/Admin FST UIN Imam Bonjol.')" class="fw-semibold text-decoration-none" style="color: var(--simpres-olive);">
-                        Hubungi Admin
-                    </a>
-                </small>
-            </div>
-
-            <!-- Quick Account Fill for Evaluation -->
-            <div class="quick-accounts">
-                <div class="small fw-bold text-muted mb-1" style="font-size: 11px;">Akun Cepat (Sesuai Laporan Proyek):</div>
-                <div class="d-flex flex-wrap">
-                    <button type="button" class="quick-account-btn" onclick="isiAkun('mahasiswa01', 'Mhs12345', 'mahasiswa')">
-                        🎓 Mahasiswa (Alya putri)
-                    </button>
-                    <button type="button" class="quick-account-btn" onclick="isiAkun('admin01', 'Admin12345', 'admin')">
-                        ⚙️ Admin (Aura Maylia)
-                    </button>
-                    <button type="button" class="quick-account-btn" onclick="isiAkun('pimpinan01', 'Pimpinan12345', 'pimpinan')">
-                        🏛️ Pemimpin (Selvia)
-                    </button>
+                <!-- Pemisah Garis ATAU sesuai Figma Node 38:113 -->
+                <div class="separator-atau-wrapper">
+                    <div class="separator-atau-line"></div>
+                    <span class="separator-atau-text">Atau</span>
+                    <div class="separator-atau-line"></div>
                 </div>
-            </div>
+
+                <!-- Tombol SSO Alternatif sesuai Figma Node 38:128 & 38:136 -->
+                <a href="javascript:void(0)" onclick="alert('Fitur login Google terintegrasi sedang dalam penyiapan SSO kampus.')" class="btn-sso-figma">
+                    <i class="bi bi-google text-danger sso-icon-brand"></i>
+                    <span>Login Dengan Google</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="alert('Fitur login Microsoft terintegrasi sedang dalam penyiapan SSO kampus.')" class="btn-sso-figma">
+                    <i class="bi bi-microsoft text-primary sso-icon-brand"></i>
+                    <span>Login Dengan Microsoft</span>
+                </a>
+
+                <!-- Footer Teks Catatan sesuai Figma Node 14:39 -->
+                <div class="footer-note-link">
+                    Belum Memiliki akun? <a href="{{ route('landing') }}#kontak">Hubungi Admin</a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{{ route('pilih-peran') }}" class="small text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i> Ganti Pilihan Peran
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         function togglePasswordVisibility() {
-            const pwdInput = document.getElementById('passwordInput');
-            const icon = document.getElementById('togglePasswordBtn');
+            const pwdInput = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
             if (pwdInput.type === 'password') {
                 pwdInput.type = 'text';
                 icon.classList.remove('bi-eye');
@@ -415,12 +578,6 @@
                 icon.classList.remove('bi-eye-slash');
                 icon.classList.add('bi-eye');
             }
-        }
-
-        function isiAkun(login, password, role) {
-            document.getElementById('roleSelect').value = role;
-            document.getElementById('loginInput').value = login;
-            document.getElementById('passwordInput').value = password;
         }
     </script>
 </body>

@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -89,9 +91,223 @@ class PrestasiController extends Controller
         ));
     }
 
-    public function create(): View
+    /** Halaman 1: Input Data Prestasi (Lap. hal. 106-107) */
+    public function create(Request $request): View
     {
-        return view('mahasiswa.prestasi.create');
+        $draft = $request->session()->get('prestasi_draft', []);
+
+        return view('mahasiswa.prestasi.create', compact('draft'));
+    }
+
+    /** Memproses Halaman 1 dan melanjutkan ke Halaman 2 (Upload Sertifikat) */
+    public function postStep1(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'nama_prestasi' => ['required', 'string', 'max:200'],
+            'jenis_prestasi' => ['required', Rule::in(array_keys(Prestasi::JENIS))],
+            'tingkat_prestasi' => ['required', Rule::in(array_keys(Prestasi::TINGKAT))],
+            'tahun_perolehan' => ['required', 'integer', 'min:1900', 'max:'.now()->year],
+            'tahun_penyelenggaraan' => ['nullable', 'integer', 'min:1900', 'max:'.(now()->year + 1)],
+            'penyelenggara' => ['required', 'string', 'max:200'],
+            'tempat_pelaksanaan' => ['nullable', 'string', 'max:200'],
+            'deskripsi' => ['nullable', 'string', 'max:3000'],
+        ]);
+
+        $draft = $request->session()->get('prestasi_draft', []);
+        $request->session()->put('prestasi_draft', array_merge($draft, $validated));
+
+        return redirect()
+            ->route('mahasiswa.upload.sertifikat')
+            ->with('success', 'Data prestasi tersimpan sementara. Lanjutkan dengan mengunggah berkas sertifikat.');
+    }
+
+    /** Halaman 2: Upload Sertifikat Mahasiswa (Lap. hal. 107-108) */
+    public function uploadSertifikat(Request $request): View
+    {
+        $draft = $request->session()->get('prestasi_draft', []);
+        $prestasiList = Prestasi::query()
+            ->where('id_mahasiswa', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return view('mahasiswa.prestasi.upload-sertifikat', compact('draft', 'prestasiList'));
+    }
+
+    /** Memproses Halaman 2 dan melanjutkan ke Halaman 3 (Upload Dokumentasi) */
+    public function postUploadSertifikat(Request $request): RedirectResponse
+    {
+        $rules = [
+            'perolehan' => ['required', Rule::in(array_keys(Prestasi::PEROLEHAN))],
+            'id_prestasi' => ['nullable', 'exists:prestasi,id'],
+        ];
+
+        $draft = $request->session()->get('prestasi_draft', []);
+        $hasExistingTemp = ! empty($draft['temp_sertifikat_path']);
+
+        if (! $hasExistingTemp && ! $request->filled('id_prestasi')) {
+            $rules['sertifikat'] = ['required', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'];
+        } else {
+            $rules['sertifikat'] = ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'];
+        }
+
+        $validated = $request->validate($rules);
+
+        // Jika mengunggah sertifikat untuk prestasi yang sudah tersimpan sebelumnya di DB
+        if (! empty($validated['id_prestasi'])) {
+            $prestasi = Prestasi::query()
+                ->where('id_mahasiswa', $request->user()->id)
+                ->findOrFail($validated['id_prestasi']);
+
+            $prestasi->update(['perolehan' => $validated['perolehan']]);
+
+            if ($request->hasFile('sertifikat')) {
+                $baru = [];
+                $this->berkas->simpanSertifikat($prestasi, $request->file('sertifikat'), $baru);
+            }
+
+            return redirect()
+                ->route('mahasiswa.prestasi.show', $prestasi)
+                ->with('success', 'Sertifikat dan peringkat prestasi berhasil diperbarui.');
+        }
+
+        // Alur Multi-Step: Simpan berkas sementara dan update draft session
+        if ($request->hasFile('sertifikat')) {
+            $file = $request->file('sertifikat');
+            $tempPath = $file->store('temp_sertifikat', 'local');
+            $draft['temp_sertifikat_path'] = $tempPath;
+            $draft['temp_sertifikat_name'] = $file->getClientOriginalName();
+        }
+
+        $draft['perolehan'] = $validated['perolehan'];
+        $request->session()->put('prestasi_draft', $draft);
+
+        return redirect()
+            ->route('mahasiswa.upload.dokumentasi')
+            ->with('success', 'Sertifikat berhasil dipilih. Silakan unggah foto dokumentasi kegiatan jika tersedia.');
+    }
+
+    /** Halaman 3: Upload Dokumentasi Kegiatan (Lap. hal. 108-109) */
+    public function uploadDokumentasi(Request $request): View
+    {
+        $draft = $request->session()->get('prestasi_draft', []);
+        $prestasiList = Prestasi::query()
+            ->where('id_mahasiswa', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return view('mahasiswa.prestasi.upload-dokumentasi', compact('draft', 'prestasiList'));
+    }
+
+    /** Memproses Halaman 3: Finalisasi Penyimpanan ke Database (Lap. hal. 108-109) */
+    public function postUploadDokumentasi(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'id_prestasi' => ['nullable', 'exists:prestasi,id'],
+            'dokumentasi' => ['nullable', 'array', 'max:10'],
+            'dokumentasi.*' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'],
+            'keterangan_dokumentasi' => ['nullable', 'array'],
+            'keterangan_dokumentasi.*' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        // Jika mengunggah dokumentasi untuk prestasi yang sudah ada di DB
+        if (! empty($validated['id_prestasi'])) {
+            $prestasi = Prestasi::query()
+                ->where('id_mahasiswa', $request->user()->id)
+                ->findOrFail($validated['id_prestasi']);
+
+            $baru = [];
+            $this->berkas->simpanDokumentasi(
+                $prestasi,
+                array_filter($request->file('dokumentasi') ?? []),
+                $validated['keterangan_dokumentasi'] ?? [],
+                $baru
+            );
+
+            return redirect()
+                ->route('mahasiswa.prestasi.show', $prestasi)
+                ->with('success', 'Dokumentasi berhasil ditambahkan ke data prestasi.');
+        }
+
+        $draft = $request->session()->get('prestasi_draft');
+
+        if (! $draft || empty($draft['nama_prestasi'])) {
+            return redirect()
+                ->route('mahasiswa.prestasi.create')
+                ->withErrors(['nama_prestasi' => 'Silakan lengkapi data prestasi pada Halaman 1 terlebih dahulu.']);
+        }
+
+        if (empty($draft['temp_sertifikat_path']) || empty($draft['perolehan'])) {
+            return redirect()
+                ->route('mahasiswa.upload.sertifikat')
+                ->withErrors(['sertifikat' => 'Silakan unggah sertifikat dan pilih peringkat pada Halaman 2 terlebih dahulu.']);
+        }
+
+        $user = $request->user();
+        $baru = [];
+
+        try {
+            $prestasi = DB::transaction(function () use (
+                $request,
+                $draft,
+                $validated,
+                $user,
+                &$baru
+            ) {
+                $prestasi = Prestasi::create([
+                    'id_mahasiswa' => $user->id,
+                    'nama_prestasi' => $draft['nama_prestasi'],
+                    'jenis_prestasi' => $draft['jenis_prestasi'],
+                    'tingkat_prestasi' => $draft['tingkat_prestasi'],
+                    'perolehan' => $draft['perolehan'],
+                    'tahun_perolehan' => $draft['tahun_perolehan'],
+                    'tahun_penyelenggaraan' => $draft['tahun_penyelenggaraan'] ?? $draft['tahun_perolehan'],
+                    'penyelenggara' => $draft['penyelenggara'],
+                    'tempat_pelaksanaan' => $draft['tempat_pelaksanaan'] ?? null,
+                    'deskripsi' => $draft['deskripsi'] ?? null,
+                    'status_verifikasi' => 'menunggu',
+                ]);
+
+                // Pindahkan berkas sertifikat dari path sementara ke direktori permanen
+                $this->berkas->simpanSertifikatDariPath(
+                    $prestasi,
+                    $draft['temp_sertifikat_path'],
+                    $draft['temp_sertifikat_name'] ?? 'sertifikat.pdf',
+                    $baru
+                );
+
+                // Simpan dokumentasi jika dilampirkan
+                $this->berkas->simpanDokumentasi(
+                    $prestasi,
+                    array_filter($request->file('dokumentasi') ?? []),
+                    $validated['keterangan_dokumentasi'] ?? [],
+                    $baru
+                );
+
+                return $prestasi;
+            });
+        } catch (\Throwable $e) {
+            $this->berkas->hapus($baru);
+            throw $e;
+        }
+
+        // Bersihkan draft session setelah berhasil disimpan permanen
+        $request->session()->forget('prestasi_draft');
+
+        return redirect()
+            ->route('mahasiswa.prestasi.show', $prestasi)
+            ->with('success', 'Prestasi berhasil diajukan dan sedang menunggu verifikasi Admin.');
+    }
+
+    /** Membatalkan pengisian draft dan kembali ke daftar prestasi */
+    public function cancelDraft(Request $request): RedirectResponse
+    {
+        $draft = $request->session()->get('prestasi_draft', []);
+        if (! empty($draft['temp_sertifikat_path'])) {
+            Storage::disk('local')->delete($draft['temp_sertifikat_path']);
+        }
+        $request->session()->forget('prestasi_draft');
+
+        return redirect()->route('mahasiswa.prestasi.index');
     }
 
     public function store(StorePrestasiRequest $request): RedirectResponse

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MahasiswaController as AdminMahasiswaController;
 use App\Http\Controllers\Admin\VerifikasiController as AdminVerifikasiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\NotifikasiController as MahasiswaNotifikasiController;
@@ -15,7 +16,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Halaman Beranda / Landing Page (Lap. hal. 100-101)
-Route::get('/', function () {
+Route::get('/', [BerandaController::class, 'index'])->name('landing');
+Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
+
+// Navigasi Terpadu /dashboard ke Dashboard masing-masing Peran
+Route::get('/dashboard', function () {
     $user = Auth::user();
 
     if ($user) {
@@ -35,7 +40,7 @@ Route::get('/', function () {
     }
 
     return redirect()->route('login');
-})->name('landing');
+})->name('dashboard');
 
 // Halaman Pemilihan Peran Pengguna (Lap. hal. 101-102)
 Route::get('/pilih-peran', fn () => view('auth.role-selection'))->name('pilih-peran');
@@ -47,6 +52,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:10,1')
         ->name('login.process');
+
+    // Fitur Login Cepat (Akun Demo)
+    Route::post('/login/quick/{role}', [AuthController::class, 'quickLogin'])
+        ->name('login.quick');
 });
 
 Route::middleware('auth')->group(function () {
@@ -76,12 +85,20 @@ Route::middleware('auth')->group(function () {
 
             // Riwayat & Manajemen Data Prestasi (Lap. hal. 106-111)
             Route::get('/prestasi', [MahasiswaPrestasiController::class, 'index'])->name('prestasi.index');
+
+            // Halaman 1: Input Data Prestasi (Lap. hal. 106-107)
             Route::get('/prestasi/create', [MahasiswaPrestasiController::class, 'create'])->name('prestasi.create');
+            Route::post('/prestasi/create', [MahasiswaPrestasiController::class, 'postStep1'])->name('prestasi.post-step1');
+            Route::post('/prestasi/batal-draft', [MahasiswaPrestasiController::class, 'cancelDraft'])->name('prestasi.batal-draft');
             Route::post('/prestasi', [MahasiswaPrestasiController::class, 'store'])->name('prestasi.store');
 
-            // Navigasi cepat Upload Sertifikat & Dokumentasi (Lap. hal. 107-109)
-            Route::get('/upload-sertifikat', fn () => redirect()->route('mahasiswa.prestasi.create', ['step' => 'sertifikat']))->name('upload.sertifikat');
-            Route::get('/upload-dokumentasi', fn () => redirect()->route('mahasiswa.prestasi.create', ['step' => 'dokumentasi']))->name('upload.dokumentasi');
+            // Halaman 2: Upload Sertifikat (Lap. hal. 107-108)
+            Route::get('/upload-sertifikat', [MahasiswaPrestasiController::class, 'uploadSertifikat'])->name('upload.sertifikat');
+            Route::post('/upload-sertifikat', [MahasiswaPrestasiController::class, 'postUploadSertifikat'])->name('upload.sertifikat.post');
+
+            // Halaman 3: Upload Dokumentasi (Lap. hal. 108-109)
+            Route::get('/upload-dokumentasi', [MahasiswaPrestasiController::class, 'uploadDokumentasi'])->name('upload.dokumentasi');
+            Route::post('/upload-dokumentasi', [MahasiswaPrestasiController::class, 'postUploadDokumentasi'])->name('upload.dokumentasi.post');
 
             Route::get('/prestasi/{prestasi}', [MahasiswaPrestasiController::class, 'show'])
                 ->whereNumber('prestasi')->name('prestasi.show');

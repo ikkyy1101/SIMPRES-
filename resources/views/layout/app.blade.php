@@ -24,6 +24,8 @@
             --simpres-maroon-dark: #5e1421;
             --simpres-gold: #cfa83c;
             --simpres-bg: #f8f9fa;
+            /* 5-Color Stop Figma Gradient (#54511A, #DED987, #66621F, #6A6621, #BAB33A) */
+            --simpres-figma-gradient: linear-gradient(90deg, #54511a 0%, #ded987 5.77%, #66621f 17.31%, #6a6621 21.15%, #bab33a 100%);
         }
 
         body {
@@ -31,6 +33,17 @@
             background-color: var(--simpres-bg);
             color: #2b2d42;
             min-height: 100vh;
+        }
+
+        /* Top decorative accent line from Figma header */
+        .top-accent-line {
+            height: 3px;
+            width: 100%;
+            background: var(--simpres-figma-gradient);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
         }
 
         /* Sidebar Styling */
@@ -351,6 +364,71 @@
             color: #ffffff;
         }
 
+        /* Figma Theme Components */
+        .btn-figma-olive {
+            background-color: #535020;
+            color: #ffffff;
+            border: none;
+            font-weight: 600;
+            border-radius: 8px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-figma-olive:hover {
+            background-color: #3e3b16;
+            color: #ffffff;
+        }
+
+        .btn-figma-cancel {
+            background-color: #dedee5;
+            color: #100e0e;
+            border: none;
+            font-weight: 600;
+            border-radius: 8px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-figma-cancel:hover {
+            background-color: #cbd5e1;
+            color: #100e0e;
+        }
+
+        .form-control-figma, .form-select-figma {
+            background-color: #f1f2f6;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            min-height: 48px;
+            font-size: 15px;
+            color: #100e0e;
+            transition: all 0.2s ease;
+        }
+
+        .form-control-figma:focus, .form-select-figma:focus {
+            background-color: #ffffff;
+            border-color: #535020;
+            box-shadow: 0 0 0 0.2rem rgba(83, 80, 32, 0.15);
+        }
+
+        .dropzone-figma {
+            background-color: #f2f2f7;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .dropzone-figma:hover {
+            border-color: #535020;
+            background-color: #ebedf2;
+        }
+
         .btn-maroon {
             background-color: var(--simpres-maroon);
             color: #ffffff;
@@ -410,10 +488,11 @@
 </head>
 
 <body>
+    <div class="top-accent-line"></div>
     @auth
         <!-- Left Sidebar Navigation -->
         <aside class="sidebar" id="sidebarNav">
-            <div class="sidebar-brand">
+            <a href="{{ route('dashboard') }}" class="sidebar-brand text-decoration-none">
                 <div class="brand-icon">
                     <i class="bi bi-mortarboard-fill"></i>
                 </div>
@@ -421,7 +500,7 @@
                     <h6 class="fw-bold mb-0 text-white">SIMPRES</h6>
                     <small class="text-white-50" style="font-size: 11px;">FST UIN Imam Bonjol</small>
                 </div>
-            </div>
+            </a>
 
             <div class="sidebar-user">
                 <div class="user-avatar">
@@ -450,13 +529,13 @@
                     <a href="{{ route('profil.show') }}" class="nav-link @if(request()->routeIs('profil.*')) active @endif">
                         <i class="bi bi-person-circle"></i> <span>Profil</span>
                     </a>
-                    <a href="{{ route('mahasiswa.prestasi.create') }}" class="nav-link @if(request()->routeIs('mahasiswa.prestasi.create') && !request('step')) active @endif">
+                    <a href="{{ route('mahasiswa.prestasi.create') }}" class="nav-link @if(request()->routeIs('mahasiswa.prestasi.create')) active @endif" id="sidebar-nav-data">
                         <i class="bi bi-plus-circle"></i> <span>Data Prestasi</span>
                     </a>
-                    <a href="{{ route('mahasiswa.upload.sertifikat') }}" class="nav-link @if(request('step') === 'sertifikat') active @endif">
+                    <a href="{{ route('mahasiswa.upload.sertifikat') }}" class="nav-link @if(request()->routeIs('mahasiswa.upload.sertifikat*')) active @endif" id="sidebar-nav-sertifikat">
                         <i class="bi bi-cloud-arrow-up"></i> <span>Upload Sertifikat</span>
                     </a>
-                    <a href="{{ route('mahasiswa.upload.dokumentasi') }}" class="nav-link @if(request('step') === 'dokumentasi') active @endif">
+                    <a href="{{ route('mahasiswa.upload.dokumentasi') }}" class="nav-link @if(request()->routeIs('mahasiswa.upload.dokumentasi*')) active @endif" id="sidebar-nav-dokumentasi">
                         <i class="bi bi-images"></i> <span>Upload Dokumentasi</span>
                     </a>
                     <a href="{{ route('mahasiswa.prestasi.index') }}" class="nav-link @if(request()->routeIs('mahasiswa.prestasi.index', 'mahasiswa.prestasi.show', 'mahasiswa.prestasi.edit')) active @endif">
@@ -529,6 +608,11 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3 ms-auto">
+                    <a href="{{ route('landing') }}" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1 rounded-pill px-3" title="Lihat Halaman Beranda Publik">
+                        <i class="bi bi-house-door"></i>
+                        <span>Beranda Publik</span>
+                    </a>
+
                     @if(auth()->user()->isMahasiswa() && ($jumlahNotifikasi ?? 0) > 0)
                         <a href="{{ route('mahasiswa.notifikasi.index') }}" class="position-relative text-dark text-decoration-none">
                             <i class="bi bi-bell-fill fs-5 text-secondary"></i>

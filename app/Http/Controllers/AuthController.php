@@ -51,6 +51,38 @@ class AuthController extends Controller
         return redirect()->route('mahasiswa.dashboard');
     }
 
+    /**
+     * Fitur Login Cepat (Uji Coba Demo Akun) untuk Mahasiswa, Admin, dan Pemimpin.
+     */
+    public function quickLogin(Request $request, string $role): RedirectResponse
+    {
+        $validRoles = ['mahasiswa', 'admin', 'pimpinan'];
+        if (! in_array($role, $validRoles, true)) {
+            return redirect()->route('login');
+        }
+
+        $user = User::query()->where('role', $role)->first();
+
+        if (! $user) {
+            return redirect()->route('login')->withErrors([
+                'login' => 'Akun demo untuk peran '.ucfirst($role).' belum tersedia di database.',
+            ]);
+        }
+
+        Auth::login($user, (bool) $request->boolean('remember'));
+        $request->session()->regenerate();
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->isPimpinan()) {
+            return redirect()->route('pimpinan.dashboard');
+        }
+
+        return redirect()->route('mahasiswa.dashboard');
+    }
+
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();

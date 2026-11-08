@@ -92,9 +92,9 @@ class DashboardController extends Controller
 
     /** Rekapitulasi Data Prestasi Admin (Lap. hal. 123-124) */
     /**
- * Kriteria pengelompokan rekap (F-29, F-30). Ekspresi SQL bersifat tetap (whitelist).
- */
-public function rekapitulasi(Request $request): View|StreamedResponse
+     * Kriteria pengelompokan rekap (F-29, F-30). Ekspresi SQL bersifat tetap (whitelist).
+     */
+    public function rekapitulasi(Request $request): View|StreamedResponse
     {
         $kategori = $request->input('kategori');
         $tingkat = $request->input('tingkat');

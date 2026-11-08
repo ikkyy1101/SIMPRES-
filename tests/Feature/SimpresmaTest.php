@@ -87,6 +87,32 @@ class SimpresmaTest extends TestCase
         ])->assertRedirect(route('mahasiswa.dashboard'));
     }
 
+    public function test_dashboard_route_redirects_by_authenticated_role(): void
+    {
+        $m = $this->mahasiswa();
+        $this->actingAs($m)->get(route('dashboard'))
+            ->assertRedirect(route('mahasiswa.dashboard'));
+
+        $admin = $this->admin();
+        $this->actingAs($admin)->get(route('dashboard'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_quick_login_authenticates_and_redirects_by_role(): void
+    {
+        $mhs = $this->mahasiswa();
+        $this->post(route('login.quick', ['role' => 'mahasiswa']))
+            ->assertRedirect(route('mahasiswa.dashboard'));
+        $this->assertAuthenticatedAs($mhs);
+
+        $this->post('/logout');
+
+        $admin = $this->admin();
+        $this->post(route('login.quick', ['role' => 'admin']))
+            ->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_mahasiswa_cannot_open_admin_area_and_vice_versa(): void
     {
         $this->actingAs($this->mahasiswa())
@@ -121,6 +147,44 @@ class SimpresmaTest extends TestCase
         ]))->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('dokumentasi', ['keterangan' => 'Foto bersama sertifikat']);
+    }
+
+    public function test_mahasiswa_can_submit_prestasi_via_separate_pages_flow(): void
+    {
+        Storage::fake('local');
+        $m = $this->mahasiswa();
+
+        // 1. Halaman 1: Simpan data prestasi
+        $this->actingAs($m)->post(route('mahasiswa.prestasi.post-step1'), [
+            'nama_prestasi' => 'Olimpiade Sains Mahasiswa',
+            'jenis_prestasi' => 'akademik',
+            'tingkat_prestasi' => 'nasional',
+            'tahun_perolehan' => 2026,
+            'tahun_penyelenggaraan' => 2026,
+            'penyelenggara' => 'Kementerian Riset dan Teknologi',
+            'tempat_pelaksanaan' => 'Yogyakarta',
+            'deskripsi' => 'Kompetisi sains bidang teknologi',
+        ])->assertRedirect(route('mahasiswa.upload.sertifikat'))
+            ->assertSessionHas('prestasi_draft');
+
+        // 2. Halaman 2: Upload sertifikat dan pilih peringkat
+        $this->actingAs($m)->post(route('mahasiswa.upload.sertifikat.post'), [
+            'perolehan' => 'juara_1',
+            'sertifikat' => UploadedFile::fake()->create('sertifikat-olimpiade.pdf', 120, 'application/pdf'),
+        ])->assertRedirect(route('mahasiswa.upload.dokumentasi'));
+
+        // 3. Halaman 3: Upload dokumentasi dan finalisasi
+        $this->actingAs($m)->post(route('mahasiswa.upload.dokumentasi.post'), [
+            'dokumentasi' => [0 => UploadedFile::fake()->create('foto-juara.jpg', 60, 'image/jpeg')],
+            'keterangan_dokumentasi' => [0 => 'Penerimaan medali emas'],
+        ])->assertRedirect();
+
+        $p = Prestasi::where('nama_prestasi', 'Olimpiade Sains Mahasiswa')->firstOrFail();
+        $this->assertSame('juara_1', $p->perolehan);
+        $this->assertSame('akademik', $p->jenis_prestasi);
+        $this->assertCount(1, $p->sertifikat);
+        $this->assertCount(1, $p->dokumentasi);
+        $this->assertNull(session('prestasi_draft'));
     }
 
     public function test_certificate_is_required_and_perolehan_is_validated(): void
@@ -285,8 +349,11 @@ class SimpresmaTest extends TestCase
         $admin = $this->admin();
 
         foreach ([
+            route('mahasiswa.dashboard'),
             route('mahasiswa.prestasi.index'),
             route('mahasiswa.prestasi.create'),
+            route('mahasiswa.upload.sertifikat'),
+            route('mahasiswa.upload.dokumentasi'),
             route('mahasiswa.prestasi.show', $p),
             route('mahasiswa.notifikasi.index'),
             route('profil.show'),
