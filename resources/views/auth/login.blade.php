@@ -144,6 +144,35 @@
             justify-content: center;
             background: #ffffff;
             overflow-y: auto;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .auth-form-inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        /* Ornamen Lengkungan 3 Warna di Sudut Kanan Bawah Sesuai Desain Figma Node 32:78 */
+        .auth-corner-waves {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: clamp(260px, 24vw, 420px);
+            height: clamp(200px, 18vw, 320px);
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .auth-corner-waves svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .login-header-title {
@@ -349,6 +378,11 @@
             .login-header-title {
                 font-size: 28px;
             }
+            .auth-corner-waves {
+                width: 200px;
+                height: 150px;
+                opacity: 0.9;
+            }
         }
     </style>
 </head>
@@ -380,7 +414,8 @@
 
         <!-- Kolom Kanan: Form Login sesuai Figma 125:209 -->
         <div class="auth-form-pane">
-            <h1 class="login-header-title">Selamat Datang</h1>
+            <div class="auth-form-inner">
+                <h1 class="login-header-title">Selamat Datang</h1>
             <p class="login-header-subtitle">Silakan masukkan informasi akun Anda untuk masuk ke sistem</p>
 
             <!-- Bagian Login Cepat (Akun Demo) bertema Figma -->
@@ -563,6 +598,19 @@
                 </div>
             </form>
         </div>
+
+        <!-- Ornamen Lengkungan 3 Warna Sudut Kanan Bawah Sesuai Desain Figma (#100E0E, #535020, #4E0909) -->
+        <div class="auth-corner-waves" aria-hidden="true">
+            <svg viewBox="0 0 600 450" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <!-- 1. Lapisan Lengkung Atas (#100E0E) -->
+                <path d="M 0 450 C 180 410, 380 290, 600 50 L 600 450 Z" fill="#100E0E" />
+                <!-- 2. Lapisan Lengkung Tengah (#535020) -->
+                <path d="M 160 450 C 300 410, 460 300, 600 160 L 600 450 Z" fill="#535020" />
+                <!-- 3. Lapisan Lengkung Bawah (#4E0909) -->
+                <path d="M 320 450 C 420 420, 520 330, 600 270 L 600 450 Z" fill="#4E0909" />
+            </svg>
+        </div>
+    </div>
     </div>
 
     <script>
