@@ -376,6 +376,64 @@ class SimpresmaTest extends TestCase
         }
     }
 
+    public function test_student_profile_form_shows_only_allowed_programs_of_study(): void
+    {
+        $student = $this->mahasiswa();
+
+        $response = $this->actingAs($student)->get(route('profil.edit'));
+
+        $response->assertOk()
+            ->assertSee('for="prodi"', false)
+            ->assertSee('id="prodi" name="prodi"', false)
+            ->assertSee('<option value="Sistem Informasi"', false)
+            ->assertSee('<option value="Matematika"', false)
+            ->assertSee('<option value="Ilmu Aktuaria"', false)
+            ->assertDontSee('<option value="Teknik Informatika"', false)
+            ->assertDontSee('<option value="Sains Informasi Geografi"', false)
+            ->assertDontSee('<option value="Fisika"', false)
+            ->assertDontSee('<option value="Biologi"', false);
+    }
+
+    public function test_student_profile_update_accepts_allowed_programs_of_study(): void
+    {
+        $student = $this->mahasiswa();
+
+        foreach (['Sistem Informasi', 'Matematika', 'Ilmu Aktuaria'] as $program) {
+            $this->actingAs($student)
+                ->put(route('profil.update'), [
+                    'nama' => $student->nama,
+                    'email' => $student->email,
+                    'nim' => $student->nim,
+                    'prodi' => $program,
+                ])
+                ->assertRedirect(route('profil.show'));
+
+            $this->assertDatabaseHas('users', [
+                'id' => $student->id,
+                'prodi' => $program,
+            ]);
+        }
+    }
+
+    public function test_student_profile_update_rejects_program_outside_allowed_list(): void
+    {
+        $student = $this->mahasiswa();
+
+        $this->actingAs($student)
+            ->put(route('profil.update'), [
+                'nama' => $student->nama,
+                'email' => $student->email,
+                'nim' => $student->nim,
+                'prodi' => 'Teknik Informatika',
+            ])
+            ->assertSessionHasErrors('prodi');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $student->id,
+            'prodi' => 'Sistem Informasi',
+        ]);
+    }
+
     /* ---------- Admin: manajemen mahasiswa ---------- */
 
     public function test_admin_creates_student_account(): void
