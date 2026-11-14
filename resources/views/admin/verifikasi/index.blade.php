@@ -43,12 +43,14 @@
 
                 <div class="col-md-3">
                     <label class="form-label small fw-bold" for="status_verifikasi">Status Verifikasi</label>
+                    
                     <select id="status_verifikasi" name="status_verifikasi" class="form-select">
-                        <option value="">Semua Status</option>
-                        @foreach (\App\Models\Prestasi::STATUS as $k => $label)
-                            <option value="{{ $k }}" @selected(($filters['status_verifikasi'] ?? '') === $k)>{{ $label }}</option>
-                        @endforeach
+                     <option value="">Semua Status</option>
+                     <option value="menunggu_verifikasi" @selected(($filters['status_verifikasi'] ?? '') === 'menunggu_verifikasi')>Menunggu Verifikasi</option>
+                     <option value="terverifikasi" @selected(($filters['status_verifikasi'] ?? '') === 'terverifikasi')>Terverifikasi</option>
+                     <option value="perlu_perbaikan" @selected(($filters['status_verifikasi'] ?? '') === 'perlu_perbaikan')>Perlu Perbaikan</option>
                     </select>
+
                 </div>
 
                 <div class="col-md-2">
