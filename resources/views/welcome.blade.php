@@ -393,7 +393,7 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('pilih-peran') }}" class="btn-figma-login">
+                        <a href="{{ route('login') }}" class="btn-figma-login">
                             Login
                         </a>
                     @endauth
@@ -431,7 +431,7 @@
                                 Buka Dashboard Saya <i class="bi bi-arrow-right ms-2"></i>
                             </a>
                         @else
-                            <a href="{{ route('pilih-peran') }}" class="btn btn-figma-login px-4 py-3 fw-bold shadow-sm" style="background-color: #54511a; border-radius: 10px;">
+                            <a href="{{ route('login') }}" class="btn btn-figma-login px-4 py-3 fw-bold shadow-sm" style="background-color: #54511a; border-radius: 10px;">
                                 Masuk ke Sistem <i class="bi bi-arrow-right ms-2"></i>
                             </a>
                         @endauth
@@ -572,7 +572,7 @@
                         Setiap prestasi yang diajukan oleh mahasiswa akan diverifikasi oleh Admin Fakultas dan ditampilkan secara transparan di sistem.
                     </p>
                     <div>
-                        <a href="{{ route('pilih-peran') }}" class="btn text-white px-4 py-2 rounded-3 shadow-sm" style="background-color: #54511a;">
+                        <a href="{{ route('login') }}" class="btn text-white px-4 py-2 rounded-3 shadow-sm" style="background-color: #54511a;">
                             Mulai Ajukan Prestasi
                         </a>
                     </div>
@@ -667,7 +667,7 @@
                                 Menuju Dashboard <i class="bi bi-arrow-right ms-2"></i>
                             </a>
                         @else
-                            <a href="{{ route('pilih-peran') }}" class="btn btn-light fw-bold py-3 px-4 rounded-3 text-dark">
+                            <a href="{{ route('login') }}" class="btn btn-light fw-bold py-3 px-4 rounded-3 text-dark">
                                 Pilih Peran & Masuk <i class="bi bi-box-arrow-in-right ms-2"></i>
                             </a>
                         @endauth

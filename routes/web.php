@@ -42,8 +42,8 @@ Route::get('/dashboard', function () {
     return redirect()->route('login');
 })->name('dashboard');
 
-// Halaman Pemilihan Peran Pengguna (Lap. hal. 101-102)
-Route::get('/pilih-peran', fn () => view('auth.role-selection'))->name('pilih-peran');
+// Langsung menuju halaman login tanpa melalui pemilihan peran
+Route::get('/pilih-peran', fn () => redirect()->route('login'))->name('pilih-peran');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn () => view('auth.login'))->name('login');
