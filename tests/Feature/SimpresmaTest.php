@@ -98,6 +98,24 @@ class SimpresmaTest extends TestCase
             ->assertRedirect(route('admin.dashboard'));
     }
 
+    public function test_mahasiswa_dashboard_shows_database_statuses_and_matching_counts(): void
+    {
+        $mahasiswa = $this->mahasiswa();
+        $this->prestasi($mahasiswa, ['status_verifikasi' => 'terverifikasi', 'skor' => 85]);
+        $this->prestasi($mahasiswa, ['status_verifikasi' => 'perlu_perbaikan']);
+        $this->prestasi($mahasiswa);
+
+        $response = $this->actingAs($mahasiswa)->get(route('mahasiswa.dashboard'));
+
+        $response->assertOk()
+            ->assertSee('Terverifikasi')
+            ->assertSee('Perlu Perbaikan')
+            ->assertSee('Menunggu Verifikasi')
+            ->assertViewHas('terverifikasi', 1)
+            ->assertViewHas('perluPerbaikan', 1)
+            ->assertViewHas('dalamProses', 1);
+    }
+
     public function test_quick_login_authenticates_and_redirects_by_role(): void
     {
         $mhs = $this->mahasiswa();
