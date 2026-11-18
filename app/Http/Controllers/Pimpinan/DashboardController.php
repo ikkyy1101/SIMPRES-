@@ -213,25 +213,18 @@ public function rekapitulasi(Request $request): View|StreamedResponse
         ->pluck('total', 'prestasi.tahun_perolehan')
         ->toArray();
 
-    // Daftar prestasi
-    $prestasiList = (clone $query)
-        ->orderByDesc('prestasi.created_at')
-        ->paginate(15)
-        ->withQueryString();
+        $prestasiList = $query->orderByDesc('prestasi.created_at')->paginate(15)->withQueryString();
 
-    // Dropdown program studi hanya menampilkan tiga prodi FST
-    $prodiList = collect($daftarProdiFST);
+        $prodiList = User::query()
+            ->whereNotNull('prodi')
+            ->distinct()
+            ->orderBy('prodi')
+            ->pluck('prodi');
 
-    // Dropdown tahun hanya mengambil tahun prestasi dari mahasiswa FST
-    $tahunList = Prestasi::query()
-        ->join('users', 'users.id', '=', 'prestasi.id_mahasiswa')
-        ->whereRaw(
-            'LOWER(TRIM(users.prodi)) IN (?, ?, ?)',
-            ['matematika', 'sistem informasi', 'aktuaria']
-        )
-        ->distinct()
-        ->orderByDesc('prestasi.tahun_perolehan')
-        ->pluck('prestasi.tahun_perolehan');
+        $tahunList = Prestasi::query()
+            ->distinct()
+            ->orderByDesc('tahun_perolehan')
+            ->pluck('tahun_perolehan');
 
     return view('pimpinan.rekapitulasi', compact(
         'prestasiList',

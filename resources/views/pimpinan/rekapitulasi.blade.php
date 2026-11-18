@@ -195,14 +195,14 @@
                                     <span class="fw-semibold">{{ \App\Models\Prestasi::PEROLEHAN[$p->perolehan] ?? $p->perolehan }}</span>
                                 </td>
                                 <td>
-                                    @if ($p->skor)
-                                        <span class="badge bg-success-subtle text-success fw-bold">{{ $p->skor }}</span>
+                                    @if ($p->status_verifikasi === 'terverifikasi' && $p->skor !== null)
+                                        <span class="badge bg-success-subtle text-success fw-bold">{{ $p->skorTampil() }}</span>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @include('partials.status-badge', ['status' => $p->status_verifikasi])
+                                    @include('partials.rekap-status-badge', ['status' => $p->status_verifikasi])
                                 </td>
                                 <td class="text-end">
                                     <a href="{{ route('pimpinan.prestasi.show', $p->id) }}" class="btn btn-sm btn-outline-secondary" title="Lihat Detail Prestasi">

@@ -354,6 +354,58 @@ class SimpresmaTest extends TestCase
             ->assertSee('Data tidak tersedia');
     }
 
+    public function test_rekapitulasi_pages_render_status_and_zero_score_from_database(): void
+    {
+        $mahasiswa = $this->mahasiswa(['prodi' => 'Teknik Informatika']);
+        $this->prestasi($mahasiswa, [
+            'nama_prestasi' => 'Prestasi Skor Nol',
+            'status_verifikasi' => 'terverifikasi',
+            'skor' => 0,
+        ]);
+        $this->prestasi($mahasiswa, [
+            'nama_prestasi' => 'Prestasi Menunggu',
+            'status_verifikasi' => 'menunggu',
+            'skor' => 85,
+        ]);
+
+        $rekapitulasiPages = [
+            [$this->admin(), 'admin.rekapitulasi'],
+            [User::factory()->create(['role' => 'pimpinan', 'prodi' => null]), 'pimpinan.rekapitulasi'],
+        ];
+
+        foreach ($rekapitulasiPages as [$pengguna, $route]) {
+            $this->actingAs($pengguna)
+                ->get(route($route))
+                ->assertOk()
+                ->assertSeeText('Terverifikasi')
+                ->assertSeeText('Menunggu Verifikasi')
+                ->assertSeeText('0,00')
+                ->assertDontSee('85,00');
+        }
+    }
+
+    public function test_rekapitulasi_program_study_filters_only_include_students(): void
+    {
+        $this->mahasiswa(['prodi' => 'Teknik Informatika']);
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'prodi' => 'Prodi Admin',
+        ]);
+        $pimpinan = User::factory()->create([
+            'role' => 'pimpinan',
+            'prodi' => 'Prodi Pimpinan',
+        ]);
+
+        foreach ([[$admin, 'admin.rekapitulasi'], [$pimpinan, 'pimpinan.rekapitulasi']] as [$pengguna, $route]) {
+            $this->actingAs($pengguna)
+                ->get(route($route))
+                ->assertOk()
+                ->assertSee('Teknik Informatika')
+                ->assertDontSee('Prodi Admin')
+                ->assertDontSee('Prodi Pimpinan');
+        }
+    }
+
     /* ---------- Smoke test halaman ---------- */
 
     public function test_all_pages_render(): void
