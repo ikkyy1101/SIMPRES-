@@ -18,8 +18,6 @@
 
     <hr class="my-3 opacity-25" style="border-top: 2px solid #cbd5e1;">
 
-    @include('mahasiswa.prestasi._stepper', ['currentStep' => 1])
-
     <div class="card border-0 rounded-4 shadow-sm bg-white p-4 p-md-5">
         <form action="{{ route('mahasiswa.prestasi.post-step1') }}" method="POST">
             @csrf

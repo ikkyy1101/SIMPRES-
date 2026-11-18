@@ -18,8 +18,6 @@
 
     <hr class="my-3 opacity-25" style="border-top: 2px solid #cbd5e1;">
 
-    @include('mahasiswa.prestasi._stepper', ['currentStep' => 2])
-
     @if (!empty($draft['nama_prestasi']))
         <div class="alert border-0 rounded-3 p-3 mb-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3"
              style="background-color: #f8fafc; border-left: 4px solid #535020 !important;">
@@ -45,22 +43,6 @@
     <div class="card border-0 rounded-4 shadow-sm bg-white p-4 p-md-5">
         <form action="{{ route('mahasiswa.upload.sertifikat.post') }}" method="POST" enctype="multipart/form-data">
             @csrf
-
-            @if (empty($draft['nama_prestasi']) && $prestasiList->isNotEmpty())
-                <div class="mb-4 p-3 rounded-3 border" style="background-color: #f8fafc;">
-                    <label for="id_prestasi" class="form-label small fw-bold text-dark">
-                        Pilih Data Prestasi yang Ingin Dilengkapi Sertifikatnya:
-                    </label>
-                    <select name="id_prestasi" id="id_prestasi" class="form-select form-select-figma @error('id_prestasi') is-invalid @enderror">
-                        <option value="">pilih data prestasi yang telah terdaftar</option>
-                        @foreach ($prestasiList as $item)
-                            <option value="{{ $item->id }}">
-                                {{ $item->nama_prestasi }} ({{ $item->tahun_perolehan }}) - Status: {{ $item->statusLabel() }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
 
             <div class="row g-4 align-items-stretch">
                 <!-- Kolom Kiri: Box Upload Sertifikat Drag & Drop -->
