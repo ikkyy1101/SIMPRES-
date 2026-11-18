@@ -42,7 +42,11 @@ class ProfilController extends Controller
 
         if ($user->isMahasiswa()) {
             $rules['nim'] = ['required', 'string', 'max:30', Rule::unique('users')->ignore($user->id)];
-            $rules['prodi'] = ['nullable', 'string', 'max:100'];
+            $rules['prodi'] = [
+                'nullable',
+                'string',
+                Rule::in(['Sistem Informasi', 'Matematika', 'Ilmu Aktuaria']),
+            ];
             $rules['fakultas'] = ['nullable', 'string', 'max:100'];
             $rules['angkatan'] = ['nullable', 'integer', 'min:2000', 'max:'.(date('Y') + 1)];
         } else {

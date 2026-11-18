@@ -115,7 +115,7 @@
                                     </td>
                                     <td>{{ $item->tahun_perolehan }}</td>
                                     <td>
-                                        @include('partials.status-badge', ['status' => $item->status_verifikasi])
+                                        @include('partials.status-badge', ['prestasi' => $item])
                                     </td>
                                     <td>
                                         <strong class="{{ $item->skor ? 'text-success' : 'text-muted' }}">
