@@ -391,4 +391,125 @@ class SimpresmaTest extends TestCase
         $this->assertSame('mahasiswa', $baru->role);
         $this->assertTrue(Hash::check('rahasia123', $baru->password));
     }
+
+    public function test_admin_can_create_students_with_each_official_program_study(): void
+    {
+        $admin = $this->admin();
+
+        foreach (User::PROGRAM_STUDI as $index => $programStudi) {
+            $nim = '241702990'.$index;
+
+            $this->actingAs($admin)->post(route('admin.mahasiswa.store'), [
+                'nama' => 'Mahasiswa Baru '.$index,
+                'nim' => $nim,
+                'username' => 'mhsbaru'.$index,
+                'email' => 'baru'.$index.'@example.test',
+                'password' => 'rahasia123',
+                'prodi' => $programStudi,
+                'angkatan' => 2024,
+            ])->assertSessionHasNoErrors();
+
+            $this->assertDatabaseHas('users', [
+                'nim' => $nim,
+                'prodi' => $programStudi,
+            ]);
+        }
+    }
+
+    public function test_admin_cannot_create_or_update_student_with_unofficial_program_study(): void
+    {
+        $admin = $this->admin();
+        $mahasiswa = User::factory()->create([
+            'role' => 'mahasiswa',
+            'prodi' => 'Sistem Informasi',
+        ]);
+
+        $this->actingAs($admin)->post(route('admin.mahasiswa.store'), [
+            'nama' => 'Mahasiswa Tidak Valid',
+            'nim' => '2417029988',
+            'username' => 'mhsinvalid',
+            'email' => 'invalid@example.test',
+            'password' => 'rahasia123',
+            'prodi' => 'Teknik Informatika',
+            'angkatan' => 2024,
+        ])->assertSessionHasErrors('prodi');
+
+        $this->assertDatabaseMissing('users', ['nim' => '2417029988']);
+
+        $this->actingAs($admin)->put(route('admin.mahasiswa.update', $mahasiswa), [
+            'nama' => $mahasiswa->nama,
+            'nim' => $mahasiswa->nim,
+            'username' => $mahasiswa->username,
+            'email' => $mahasiswa->email,
+            'prodi' => 'Teknik Informatika',
+            'angkatan' => $mahasiswa->angkatan,
+        ])->assertSessionHasErrors('prodi');
+
+        $this->assertSame('Sistem Informasi', $mahasiswa->fresh()->prodi);
+    }
+
+    public function test_student_program_study_filters_and_displays_the_matching_student(): void
+    {
+        $mahasiswaSistemInformasi = User::factory()->create([
+            'nama' => 'Mahasiswa Sistem Informasi',
+            'prodi' => 'Sistem Informasi',
+        ]);
+        $mahasiswaIlmuAktuaria = User::factory()->create([
+            'nama' => 'Mahasiswa Ilmu Aktuaria',
+            'prodi' => 'Ilmu Aktuaria',
+        ]);
+
+        $response = $this->actingAs($this->admin())
+            ->get(route('admin.mahasiswa.index', [
+                'prodi' => 'Ilmu Aktuaria',
+                'q' => $mahasiswaIlmuAktuaria->nim,
+            ]));
+
+        $response->assertOk()
+            ->assertSee('Mahasiswa Ilmu Aktuaria')
+            ->assertSee('Ilmu Aktuaria')
+            ->assertDontSee($mahasiswaSistemInformasi->nama);
+    }
+
+    public function test_create_and_edit_forms_show_program_study_dropdown(): void
+    {
+        $admin = $this->admin();
+        $mahasiswa = User::factory()->create(['role' => 'mahasiswa']);
+
+        foreach ([
+            route('admin.mahasiswa.create'),
+            route('admin.mahasiswa.edit', $mahasiswa),
+        ] as $url) {
+            $response = $this->actingAs($admin)->get($url);
+
+            $response->assertOk()
+                ->assertSee('<select id="prodi" name="prodi"', false)
+                ->assertSee('Sistem Informasi')
+                ->assertSee('Ilmu Aktuaria')
+                ->assertSee('Matematika')
+                ->assertDontSee('Teknik Informatika');
+        }
+    }
+
+    public function test_student_profile_only_accepts_official_program_studies(): void
+    {
+        $mahasiswa = $this->mahasiswa(['prodi' => 'Sistem Informasi']);
+
+        $this->actingAs($mahasiswa)->get(route('profil.edit'))
+            ->assertOk()
+            ->assertSee('<select name="prodi"', false)
+            ->assertSee('Ilmu Aktuaria')
+            ->assertSee('Matematika')
+            ->assertDontSee('Teknik Informatika')
+            ->assertDontSee('Biologi');
+
+        $this->actingAs($mahasiswa)->put(route('profil.update'), [
+            'nama' => $mahasiswa->nama,
+            'nim' => $mahasiswa->nim,
+            'email' => $mahasiswa->email,
+            'prodi' => 'Teknik Informatika',
+        ])->assertSessionHasErrors('prodi');
+
+        $this->assertSame('Sistem Informasi', $mahasiswa->fresh()->prodi);
+    }
 }

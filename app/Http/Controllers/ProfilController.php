@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Pimpinan;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,10 @@ class ProfilController extends Controller
     {
         $user = $request->user()->load(['admin', 'pimpinan']);
 
-        return view('profil.edit', compact('user'));
+        return view('profil.edit', [
+            'user' => $user,
+            'prodiList' => User::PROGRAM_STUDI,
+        ]);
     }
 
     /** Simpan pembaruan profil */
@@ -42,7 +46,7 @@ class ProfilController extends Controller
 
         if ($user->isMahasiswa()) {
             $rules['nim'] = ['required', 'string', 'max:30', Rule::unique('users')->ignore($user->id)];
-            $rules['prodi'] = ['nullable', 'string', 'max:100'];
+            $rules['prodi'] = ['required', 'string', Rule::in(User::PROGRAM_STUDI)];
             $rules['fakultas'] = ['nullable', 'string', 'max:100'];
             $rules['angkatan'] = ['nullable', 'integer', 'min:2000', 'max:'.(date('Y') + 1)];
         } else {

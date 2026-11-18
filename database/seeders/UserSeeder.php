@@ -87,12 +87,12 @@ class UserSeeder extends Seeder
         $daftarMhs = [
             ['nama' => 'Dzikri Pratama Putra Ameri', 'nim' => '2317020149', 'username' => 'dzikri', 'prodi' => 'Sistem Informasi', 'angkatan' => 2023, 'gender' => 'Laki-laki', 'email' => 'dzikri@simpres.test'],
             ['nama' => 'Najwa Khairany Depi', 'nim' => '2417020020', 'username' => 'najwa', 'prodi' => 'Sistem Informasi', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'najwa@simpres.test'],
-            ['nama' => 'Muhamad Rizky', 'nim' => '2417020002', 'username' => 'rizky', 'prodi' => 'Teknik Informatika', 'angkatan' => 2024, 'gender' => 'Laki-laki', 'email' => 'rizky@simpres.test'],
+            ['nama' => 'Muhamad Rizky', 'nim' => '2417020002', 'username' => 'rizky', 'prodi' => 'Sistem Informasi', 'angkatan' => 2024, 'gender' => 'Laki-laki', 'email' => 'rizky@simpres.test'],
             ['nama' => 'Ranny Fadila', 'nim' => '2417020019', 'username' => 'ranny', 'prodi' => 'Sistem Informasi', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'ranny@simpres.test'],
-            ['nama' => 'Nur Janna', 'nim' => '2417020015', 'username' => 'nurjanna', 'prodi' => 'Sains Informasi Geografi', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'nurjanna@simpres.test'],
+            ['nama' => 'Nur Janna', 'nim' => '2417020015', 'username' => 'nurjanna', 'prodi' => 'Sistem Informasi', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'nurjanna@simpres.test'],
             ['nama' => 'Budi Santoso', 'nim' => '2317020088', 'username' => 'budi', 'prodi' => 'Matematika', 'angkatan' => 2023, 'gender' => 'Laki-laki', 'email' => 'budi@simpres.test'],
-            ['nama' => 'Siti Nurhaliza', 'nim' => '2417020099', 'username' => 'siti', 'prodi' => 'Fisika', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'siti@simpres.test'],
-            ['nama' => 'Ahmad Fauzi', 'nim' => '2317020077', 'username' => 'fauzi', 'prodi' => 'Biologi', 'angkatan' => 2023, 'gender' => 'Laki-laki', 'email' => 'fauzi@simpres.test'],
+            ['nama' => 'Siti Nurhaliza', 'nim' => '2417020099', 'username' => 'siti', 'prodi' => 'Sistem Informasi', 'angkatan' => 2024, 'gender' => 'Perempuan', 'email' => 'siti@simpres.test'],
+            ['nama' => 'Ahmad Fauzi', 'nim' => '2317020077', 'username' => 'fauzi', 'prodi' => 'Sistem Informasi', 'angkatan' => 2023, 'gender' => 'Laki-laki', 'email' => 'fauzi@simpres.test'],
         ];
 
         $mhsObjects = [$mhsAlya];

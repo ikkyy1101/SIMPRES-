@@ -21,12 +21,14 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="prodi">Program Studi <span class="text-danger">*</span></label>
-                    <input type="text" id="prodi" name="prodi" maxlength="100" list="daftar-prodi"
-                        value="{{ old('prodi', $m->prodi ?? '') }}"
-                        class="form-control @error('prodi') is-invalid @enderror" required>
-                    <datalist id="daftar-prodi">
-                        <option value="Sistem Informasi">
-                    </datalist>
+                    <select id="prodi" name="prodi" class="form-select @error('prodi') is-invalid @enderror" required>
+                        <option value="" disabled @selected(old('prodi', $m->prodi ?? '') === '')>Pilih program studi</option>
+                        @foreach ($prodiList as $programStudi)
+                            <option value="{{ $programStudi }}" @selected(old('prodi', $m->prodi ?? '') === $programStudi)>
+                                {{ $programStudi }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="angkatan">Angkatan <span class="text-danger">*</span></label>

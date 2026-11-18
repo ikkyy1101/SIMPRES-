@@ -51,12 +51,11 @@
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold">Program Studi</label>
                                 <select name="prodi" class="form-select">
-                                    <option value="Sistem Informasi" @selected(old('prodi', $user->prodi) === 'Sistem Informasi')>Sistem Informasi</option>
-                                    <option value="Teknik Informatika" @selected(old('prodi', $user->prodi) === 'Teknik Informatika')>Teknik Informatika</option>
-                                    <option value="Sains Informasi Geografi" @selected(old('prodi', $user->prodi) === 'Sains Informasi Geografi')>Sains Informasi Geografi</option>
-                                    <option value="Matematika" @selected(old('prodi', $user->prodi) === 'Matematika')>Matematika</option>
-                                    <option value="Fisika" @selected(old('prodi', $user->prodi) === 'Fisika')>Fisika</option>
-                                    <option value="Biologi" @selected(old('prodi', $user->prodi) === 'Biologi')>Biologi</option>
+                                    @foreach ($prodiList as $programStudi)
+                                        <option value="{{ $programStudi }}" @selected(old('prodi', $user->prodi) === $programStudi)>
+                                            {{ $programStudi }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">
