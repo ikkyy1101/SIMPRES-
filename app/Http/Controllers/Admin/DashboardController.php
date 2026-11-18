@@ -172,6 +172,7 @@ class DashboardController extends Controller
         $prestasiList = $query->orderByDesc('prestasi.created_at')->paginate(15)->withQueryString();
 
         $prodiList = User::query()
+            ->where('role', 'mahasiswa')
             ->whereNotNull('prodi')
             ->distinct()
             ->orderBy('prodi')
