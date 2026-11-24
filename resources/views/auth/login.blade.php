@@ -346,17 +346,6 @@
             text-decoration: underline;
         }
 
-        .quick-login-btn {
-            border: 1px solid #e2e8f0 !important;
-            transition: all 0.2s ease;
-        }
-
-        .quick-login-btn:hover {
-            border-color: #535020 !important;
-            background-color: #ffffff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(83, 80, 32, 0.15) !important;
-        }
 
         /* Responsif Mobile & Tablet */
         @media (max-width: 991.98px) {
@@ -418,83 +407,7 @@
                 <h1 class="login-header-title">Selamat Datang</h1>
             <p class="login-header-subtitle">Silakan masukkan informasi akun Anda untuk masuk ke sistem</p>
 
-            <!-- Bagian Login Cepat (Akun Demo) bertema Figma -->
-            <div class="p-3 rounded-4 mb-4" style="background-color: #f1f2f6; border: 1.5px dashed #cbd5e1;">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge text-white px-2 py-1 rounded-2" style="background-color: #535020; font-size: 11px;">
-                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> LOGIN CEPAT
-                        </span>
-                        <span class="fw-bold text-dark" style="font-size: 13px;">Uji Coba Demo</span>
-                    </div>
-                    <small class="text-muted" style="font-size: 11px;">1-Klik Masuk</small>
-                </div>
-                <p class="text-muted small mb-3" style="font-size: 12px; line-height: 1.4;">
-                    Pilih akun demo di bawah untuk langsung masuk tanpa perlu mengetik kredensial:
-                </p>
 
-                <div class="row g-2">
-                    <!-- Demo Mahasiswa -->
-                    <div class="col-12 col-md-4">
-                        <form action="{{ route('login.quick', ['role' => 'mahasiswa']) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
-                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
-                                        <i class="bi bi-mortarboard-fill"></i>
-                                    </div>
-                                    <div class="text-truncate">
-                                        <strong class="d-block text-dark small" style="font-size: 12px;">Mahasiswa</strong>
-                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Alya putri</small>
-                                    </div>
-                                </div>
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Demo Admin -->
-                    <div class="col-12 col-md-4">
-                        <form action="{{ route('login.quick', ['role' => 'admin']) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
-                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
-                                        <i class="bi bi-person-badge-fill"></i>
-                                    </div>
-                                    <div class="text-truncate">
-                                        <strong class="d-block text-dark small" style="font-size: 12px;">Admin</strong>
-                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Aura Maylia</small>
-                                    </div>
-                                </div>
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Demo Pemimpin -->
-                    <div class="col-12 col-md-4">
-                        <form action="{{ route('login.quick', ['role' => 'pimpinan']) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="quick-login-btn w-100 text-start p-2 rounded-3"
-                                    style="background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                         style="width: 32px; height: 32px; background: rgba(83, 80, 32, 0.12); color: #535020;">
-                                        <i class="bi bi-graph-up-arrow"></i>
-                                    </div>
-                                    <div class="text-truncate">
-                                        <strong class="d-block text-dark small" style="font-size: 12px;">Pemimpin</strong>
-                                        <small class="text-muted text-truncate d-block" style="font-size: 10px;">Selvia P.</small>
-                                    </div>
-                                </div>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
 
             @if ($errors->any())
                 <div class="alert alert-danger border-0 rounded-3 p-3 mb-4 small" style="background-color: #fee2e2; color: #991b1b;">
@@ -592,8 +505,8 @@
                 </div>
 
                 <div class="text-center mt-3">
-                    <a href="{{ route('pilih-peran') }}" class="small text-muted text-decoration-none">
-                        <i class="bi bi-arrow-left me-1"></i> Ganti Pilihan Peran
+                    <a href="{{ route('landing') }}" class="small text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
                     </a>
                 </div>
             </form>
