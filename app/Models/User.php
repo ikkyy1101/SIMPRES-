@@ -12,6 +12,12 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public const PROGRAM_STUDI = [
+        'Sistem Informasi',
+        'Ilmu Aktuaria',
+        'Matematika',
+    ];
+
     protected $fillable = [
         'nama',
         'nim',

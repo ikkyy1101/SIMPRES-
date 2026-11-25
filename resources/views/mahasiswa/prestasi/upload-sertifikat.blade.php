@@ -46,21 +46,6 @@
         <form action="{{ route('mahasiswa.upload.sertifikat.post') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            @if (empty($draft['nama_prestasi']) && $prestasiList->isNotEmpty())
-                <div class="mb-4 p-3 rounded-3 border" style="background-color: #f8fafc;">
-                    <label for="id_prestasi" class="form-label small fw-bold text-dark">
-                        Pilih Data Prestasi yang Ingin Dilengkapi Sertifikatnya:
-                    </label>
-                    <select name="id_prestasi" id="id_prestasi" class="form-select form-select-figma @error('id_prestasi') is-invalid @enderror">
-                        <option value="">pilih data prestasi yang telah terdaftar</option>
-                        @foreach ($prestasiList as $item)
-                            <option value="{{ $item->id }}">
-                                {{ $item->nama_prestasi }} ({{ $item->tahun_perolehan }}) - Status: {{ $item->statusLabel() }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
 
             <div class="row g-4 align-items-stretch">
                 <!-- Kolom Kiri: Box Upload Sertifikat Drag & Drop -->

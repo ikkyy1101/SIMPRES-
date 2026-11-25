@@ -6,7 +6,6 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
         <h1 class="h4 mb-0">Riwayat Prestasi Mahasiswa</h1>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}" class="btn btn-outline-secondary">Ubah Data</a>
             <a href="{{ route('admin.mahasiswa.index') }}" class="btn btn-outline-secondary">Kembali</a>
         </div>
     </div>

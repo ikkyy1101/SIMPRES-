@@ -205,6 +205,7 @@ class DashboardController extends Controller
         $tingkat = $request->input('tingkat');
         $tahun = $request->input('tahun') ?? $request->input('tahun_perolehan');
         $status = $request->input('status');
+        $prodi = $request->input('prodi');
         $q = $request->input('q');
 
         $query = Prestasi::query()
@@ -215,6 +216,7 @@ class DashboardController extends Controller
             ->when($tingkat, fn ($b) => $b->where('prestasi.tingkat_prestasi', $tingkat))
             ->when($tahun, fn ($b) => $b->where('prestasi.tahun_perolehan', $tahun))
             ->when($status, fn ($b) => $b->where('prestasi.status_verifikasi', $status))
+            ->when($prodi, fn ($b) => $b->where('users.prodi', $prodi))
             ->when($q, function ($b) use ($q) {
                 $b->where(function ($sub) use ($q) {
                     $sub->where('prestasi.nama_prestasi', 'like', "%{$q}%")
@@ -230,19 +232,20 @@ class DashboardController extends Controller
             return response()->streamDownload(function () use ($data) {
                 $out = fopen('php://output', 'w');
                 fwrite($out, "\xEF\xBB\xBF");
-                fputcsv($out, ['No', 'Nama Mahasiswa', 'NIM', 'Nama Prestasi', 'Kategori', 'Tingkat', 'Tahun', 'Status Verifikasi', 'Skor']);
+                fputcsv($out, ['No', 'Nama Mahasiswa', 'NIM', 'Program Studi', 'Nama Prestasi', 'Kategori', 'Tingkat', 'Tahun', 'Status Verifikasi', 'Skor']);
 
                 foreach ($data as $i => $item) {
                     fputcsv($out, [
                         $i + 1,
                         $item->mahasiswa?->nama,
                         $item->mahasiswa?->nim,
+                        $item->mahasiswa?->prodi,
                         $item->nama_prestasi,
                         Prestasi::JENIS[$item->jenis_prestasi] ?? $item->jenis_prestasi,
                         Prestasi::TINGKAT[$item->tingkat_prestasi] ?? $item->tingkat_prestasi,
                         $item->tahun_perolehan,
                         Prestasi::STATUS[$item->status_verifikasi] ?? $item->status_verifikasi,
-                        $item->skor ?? '-',
+                        $item->skor !== null ? $item->skorTampil() : '-',
                     ]);
                 }
                 fclose($out);
@@ -252,6 +255,8 @@ class DashboardController extends Controller
         }
 
         $prestasi = $query->orderByDesc('prestasi.created_at')->paginate(15)->withQueryString();
+
+        $prodiList = User::PROGRAM_STUDI;
 
         $tahunList = Prestasi::query()
             ->distinct()
@@ -264,6 +269,8 @@ class DashboardController extends Controller
             'tingkat',
             'tahun',
             'status',
+            'prodi',
+            'prodiList',
             'q',
             'tahunList'
         ));

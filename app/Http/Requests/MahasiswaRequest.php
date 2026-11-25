@@ -25,7 +25,7 @@ class MahasiswaRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($id)],
             'password' => [$id ? 'nullable' : 'required', 'string', 'min:8'],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'prodi' => ['required', 'string', 'max:100'],
+            'prodi' => ['required', 'string', Rule::in(User::PROGRAM_STUDI)],
             'angkatan' => ['required', 'integer', 'min:2000', 'max:'.now()->year],
         ];
     }

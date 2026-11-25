@@ -24,14 +24,6 @@
         <form method="GET" action="{{ route('admin.verifikasi.index') }}">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold" for="q">Pencarian Data</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" id="q" name="q" value="{{ $filters['q'] ?? '' }}" class="form-control border-start-0" placeholder="Nama mahasiswa, NIM, nama lomba...">
-                    </div>
-                </div>
-
-                <div class="col-md-3">
                     <label class="form-label small fw-bold" for="prodi">Program Studi</label>
                     <select id="prodi" name="prodi" class="form-select">
                         <option value="">Semua Program Studi</option>

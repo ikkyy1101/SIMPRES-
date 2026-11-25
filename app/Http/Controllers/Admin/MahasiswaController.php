@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * Manajemen data mahasiswa (deliverable November) dan riwayat prestasi
@@ -19,7 +20,7 @@ class MahasiswaController extends Controller
     {
         $f = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
-            'prodi' => ['nullable', 'string', 'max:100'],
+            'prodi' => ['nullable', 'string', Rule::in(User::PROGRAM_STUDI)],
         ]);
 
         $mahasiswa = User::query()
@@ -41,19 +42,14 @@ class MahasiswaController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $prodiList = User::query()
-            ->where('role', 'mahasiswa')
-            ->whereNotNull('prodi')
-            ->distinct()
-            ->orderBy('prodi')
-            ->pluck('prodi');
+        $prodiList = User::PROGRAM_STUDI;
 
         return view('admin.mahasiswa.index', compact('mahasiswa', 'prodiList', 'f'));
     }
 
     public function create(): View
     {
-        return view('admin.mahasiswa.create');
+        return view('admin.mahasiswa.create', ['prodiList' => User::PROGRAM_STUDI]);
     }
 
     public function store(MahasiswaRequest $request): RedirectResponse
@@ -80,7 +76,10 @@ class MahasiswaController extends Controller
     {
         abort_unless($mahasiswa->isMahasiswa(), 404);
 
-        return view('admin.mahasiswa.edit', compact('mahasiswa'));
+        return view('admin.mahasiswa.edit', [
+            'mahasiswa' => $mahasiswa,
+            'prodiList' => User::PROGRAM_STUDI,
+        ]);
     }
 
     public function update(MahasiswaRequest $request, User $mahasiswa): RedirectResponse

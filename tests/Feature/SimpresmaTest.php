@@ -356,7 +356,7 @@ class SimpresmaTest extends TestCase
 
     public function test_rekapitulasi_pages_render_status_and_zero_score_from_database(): void
     {
-        $mahasiswa = $this->mahasiswa(['prodi' => 'Teknik Informatika']);
+        $mahasiswa = $this->mahasiswa(['prodi' => 'Sistem Informasi']);
         $this->prestasi($mahasiswa, [
             'nama_prestasi' => 'Prestasi Skor Nol',
             'status_verifikasi' => 'terverifikasi',

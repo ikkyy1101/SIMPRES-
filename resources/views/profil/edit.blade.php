@@ -51,9 +51,11 @@
                             <div class="col-md-6">
                                 <label for="prodi" class="form-label small fw-bold">Program Studi</label>
                                 <select id="prodi" name="prodi" class="form-select">
-                                    <option value="Sistem Informasi" @selected(old('prodi', $user->prodi) === 'Sistem Informasi')>Sistem Informasi</option>
-                                    <option value="Matematika" @selected(old('prodi', $user->prodi) === 'Matematika')>Matematika</option>
-                                    <option value="Ilmu Aktuaria" @selected(old('prodi', $user->prodi) === 'Ilmu Aktuaria')>Ilmu Aktuaria</option>
+                                    @foreach ($prodiList as $programStudi)
+                                        <option value="{{ $programStudi }}" @selected(old('prodi', $user->prodi) === $programStudi)>
+                                            {{ $programStudi }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">

@@ -51,7 +51,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Program Studi</label>
                     <select name="prodi" class="form-select form-select-sm">
                         <option value="">Semua Prodi</option>
@@ -60,17 +60,13 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-semibold text-muted mb-1">Pencarian</label>
-                    <div class="input-group input-group-sm">
-                        <input type="text" name="q" class="form-control" placeholder="Nama, NIM, atau kegiatan..." value="{{ $q }}">
-                        <button class="btn btn-olive" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-olive btn-sm w-100" type="submit">
+                        <i class="bi bi-funnel"></i> Terapkan
+                    </button>
                 </div>
             </div>
-            @if ($kategori || $tingkat || $tahun || $prodi || $q)
+            @if ($kategori || $tingkat || $tahun || $prodi)
                 <div class="mt-3 pt-2 border-top d-flex align-items-center justify-content-between">
                     <div class="small text-muted">
                         <i class="bi bi-funnel-fill text-primary"></i> Filter aktif diterapkan

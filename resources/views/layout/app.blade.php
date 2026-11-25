@@ -221,35 +221,6 @@
             gap: 16px;
         }
 
-        .topbar-search {
-            position: relative;
-            max-width: 480px;
-            width: 100%;
-        }
-
-        .topbar-search input {
-            padding-left: 42px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background: #ffffff;
-            font-size: 14px;
-            height: 44px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-        }
-
-        .topbar-search input:focus {
-            border-color: var(--simpres-olive);
-            box-shadow: 0 0 0 3px rgba(91, 103, 67, 0.15);
-        }
-
-        .topbar-search .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 16px;
-        }
 
         /* Stat Card */
         .stat-card {
@@ -601,11 +572,6 @@
                 <button class="btn btn-outline-secondary d-lg-none" type="button" onclick="document.getElementById('sidebarNav').classList.toggle('show')">
                     <i class="bi bi-list fs-5"></i>
                 </button>
-
-                <div class="topbar-search d-none d-sm-block">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" class="form-control" placeholder="Cari data prestasi, nama, atau kegiatan..." id="globalSearchInput" onkeydown="if(event.key==='Enter'){ const url = new URL(window.location.href); url.searchParams.set('q', this.value); window.location.href = url.toString(); }">
-                </div>
 
                 <div class="d-flex align-items-center gap-3 ms-auto">
                     <a href="{{ route('landing') }}" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1 rounded-pill px-3" title="Lihat Halaman Beranda Publik">

@@ -19,14 +19,6 @@
         </div>
     </div>
 
-    <!-- Search bar Notifikasi (Lap. hal. 111) -->
-    <div class="content-card mb-4">
-        <div class="input-group">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" id="filterNotifInput" class="form-control border-start-0" placeholder="Cari notifikasi atau kata kunci pesan..." onkeyup="filterNotifikasi()">
-        </div>
-    </div>
-
     <!-- Daftar Pengumuman dan Notifikasi (Lap. hal. 111-112) -->
     <div class="vstack gap-3" id="notifListContainer">
         @forelse ($notifikasi as $n)

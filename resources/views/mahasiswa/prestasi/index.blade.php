@@ -89,13 +89,7 @@
     <!-- Filter & Pencarian Bar -->
     <div class="content-card mb-4">
         <form method="GET" action="{{ route('mahasiswa.prestasi.index') }}" class="row g-2 align-items-center">
-            <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" name="q" class="form-control border-start-0" placeholder="Cari nama prestasi atau penyelenggara..." value="{{ $q }}">
-                </div>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-9">
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="">Semua Status Verifikasi</option>
                     @foreach (\App\Models\Prestasi::STATUS as $k => $label)
@@ -107,7 +101,7 @@
                 <button type="submit" class="btn btn-olive w-100">
                     <i class="bi bi-funnel"></i> Filter
                 </button>
-                @if($status || $q)
+                @if($status)
                     <a href="{{ route('mahasiswa.prestasi.index') }}" class="btn btn-outline-secondary">Reset</a>
                 @endif
             </div>

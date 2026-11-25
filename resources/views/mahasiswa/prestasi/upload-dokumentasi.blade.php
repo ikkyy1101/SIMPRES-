@@ -52,21 +52,6 @@
         <form action="{{ route('mahasiswa.upload.dokumentasi.post') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            @if (empty($draft['nama_prestasi']) && $prestasiList->isNotEmpty())
-                <div class="mb-4 p-3 rounded-3 border" style="background-color: #f8fafc;">
-                    <label for="id_prestasi" class="form-label small fw-bold text-dark">
-                        Pilih Data Prestasi yang Ingin Ditambahkan Bukti Pendukungnya:
-                    </label>
-                    <select name="id_prestasi" id="id_prestasi" class="form-select form-select-figma @error('id_prestasi') is-invalid @enderror">
-                        <option value="">pilih data prestasi yang telah terdaftar</option>
-                        @foreach ($prestasiList as $item)
-                            <option value="{{ $item->id }}">
-                                {{ $item->nama_prestasi }} ({{ $item->tahun_perolehan }}) - Status: {{ $item->statusLabel() }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
 
             <!-- Area Box Upload Cloud -->
             <div class="dropzone-figma p-4 p-md-5 text-center d-flex flex-column align-items-center justify-content-center mb-4 position-relative"
