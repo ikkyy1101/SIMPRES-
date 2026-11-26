@@ -569,8 +569,8 @@
         <div class="main-wrapper">
             <!-- Topbar Header -->
             <div class="topbar">
-                <button class="btn btn-outline-secondary d-lg-none" type="button" onclick="document.getElementById('sidebarNav').classList.toggle('show')">
-                    <i class="bi bi-list fs-5"></i>
+                <button class="btn btn-outline-secondary d-lg-none" id="sidebarToggle" type="button" aria-label="Buka navigasi" aria-controls="sidebarNav" aria-expanded="false">
+                    <i class="bi bi-list fs-5" aria-hidden="true"></i>
                 </button>
 
                 <div class="d-flex align-items-center gap-3 ms-auto">
@@ -653,6 +653,52 @@
     @endauth
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @auth
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const sidebar = document.getElementById('sidebarNav');
+                const sidebarToggle = document.getElementById('sidebarToggle');
+
+                if (!sidebar || !sidebarToggle) {
+                    return;
+                }
+
+                const mobileViewport = window.matchMedia('(max-width: 991.98px)');
+                const firstSidebarLink = sidebar.querySelector('.sidebar-menu a[href]');
+
+                function setSidebarState(isOpen, restoreFocus = false) {
+                    const isExpanded = mobileViewport.matches && isOpen;
+
+                    sidebar.classList.toggle('show', isExpanded);
+                    sidebar.inert = mobileViewport.matches && !isExpanded;
+                    sidebarToggle.setAttribute('aria-expanded', String(isExpanded));
+                    sidebarToggle.setAttribute('aria-label', isExpanded ? 'Tutup navigasi' : 'Buka navigasi');
+
+                    if (isExpanded && firstSidebarLink) {
+                        firstSidebarLink.focus();
+                    } else if (restoreFocus) {
+                        sidebarToggle.focus();
+                    }
+                }
+
+                setSidebarState(sidebar.classList.contains('show'));
+
+                sidebarToggle.addEventListener('click', function () {
+                    setSidebarState(!sidebar.classList.contains('show'));
+                });
+
+                mobileViewport.addEventListener('change', function () {
+                    setSidebarState(false);
+                });
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && mobileViewport.matches && sidebar.classList.contains('show')) {
+                        setSidebarState(false, true);
+                    }
+                });
+            });
+        </script>
+    @endauth
     @stack('scripts')
 </body>
 
