@@ -13,6 +13,8 @@ class BerandaController extends Controller
      */
     public function index(): View
     {
+        session(['visited_landing' => true]);
+
         $totalPrestasi = 0;
         $mahasiswaBerprestasi = 0;
         $kategoriCount = count(Prestasi::JENIS);

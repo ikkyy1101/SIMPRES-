@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -518,5 +519,147 @@ class SimpresmaTest extends TestCase
 
         $this->assertSame('mahasiswa', $baru->role);
         $this->assertTrue(Hash::check('rahasia123', $baru->password));
+    }
+
+    /* ---------- Landing guard, Daftar Akun & Ganti Sandi ---------- */
+
+    public function test_initial_guest_is_redirected_to_landing_page_before_auth_pages(): void
+    {
+        $this->get(route('login'))->assertRedirect(route('landing'));
+        $this->get(route('register'))->assertRedirect(route('landing'));
+        $this->get(route('password.forgot'))->assertRedirect(route('landing'));
+        $this->get(route('dashboard'))->assertRedirect(route('landing'));
+
+        $this->get(route('landing'))->assertOk();
+        $this->get(route('login'))->assertOk();
+        $this->get(route('register'))->assertOk();
+        $this->get(route('password.forgot'))->assertOk();
+    }
+
+    public function test_new_student_can_register_and_is_logged_in(): void
+    {
+        $this->get(route('landing'))->assertOk();
+
+        $response = $this->post(route('register.process'), [
+            'nama' => 'Mahasiswa Daftar',
+            'nim' => '2417028888',
+            'username' => 'mhsdaftar',
+            'email' => 'daftar@example.test',
+            'prodi' => 'Ilmu Aktuaria',
+            'angkatan' => 2024,
+            'no_hp' => '081234567890',
+            'password' => 'sandibaru123',
+            'password_confirmation' => 'sandibaru123',
+        ]);
+
+        $response->assertRedirect(route('mahasiswa.dashboard'));
+
+        $user = User::where('nim', '2417028888')->firstOrFail();
+        $this->assertSame('mahasiswa', $user->role);
+        $this->assertSame('Ilmu Aktuaria', $user->prodi);
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_user_can_reset_password_with_matching_account_details(): void
+    {
+        $mahasiswa = $this->mahasiswa(['username' => 'mhsreset', 'email' => 'reset@example.test']);
+
+        $this->get(route('landing'))->assertOk();
+
+        $this->post(route('password.forgot.process'), [
+            'role' => 'mahasiswa',
+            'login' => 'mhsreset',
+            'email' => 'salah@example.test',
+            'password' => 'sandibaru123',
+            'password_confirmation' => 'sandibaru123',
+        ])->assertSessionHasErrors('login');
+
+        $this->post(route('password.forgot.process'), [
+            'role' => 'mahasiswa',
+            'login' => 'mhsreset',
+            'email' => 'reset@example.test',
+            'password' => 'sandibaru123',
+            'password_confirmation' => 'sandibaru123',
+        ])->assertRedirect(route('login'));
+
+        $this->assertTrue(Hash::check('sandibaru123', $mahasiswa->fresh()->password));
+    }
+
+    public function test_logout_redirects_back_to_login_page(): void
+    {
+        $mahasiswa = $this->mahasiswa();
+
+        $this->actingAs($mahasiswa)
+            ->post(route('logout'))
+            ->assertRedirect(route('login'));
+
+        $this->assertGuest();
+        $this->get(route('login'))->assertOk();
+    }
+
+    public function test_google_login_requires_env_configuration_and_authenticates_users(): void
+    {
+        $this->get(route('landing'))->assertOk();
+
+        config([
+            'services.google.client_id' => null,
+            'services.google.client_secret' => null,
+        ]);
+
+        $this->get(route('login.google'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('login');
+
+        config([
+            'services.google.client_id' => 'test-client-id',
+            'services.google.client_secret' => 'test-client-secret',
+            'services.google.redirect' => '/auth/google/callback',
+        ]);
+
+        $redirectResponse = $this->get(route('login.google'));
+        $redirectResponse->assertRedirectContains('https://accounts.google.com/o/oauth2/v2/auth');
+
+        $state = session('google_oauth_state');
+        $this->assertNotEmpty($state);
+
+        Http::fake([
+            'https://oauth2.googleapis.com/token' => Http::response(['access_token' => 'fake-token'], 200),
+            'https://www.googleapis.com/oauth2/v3/userinfo' => Http::response([
+                'email' => 'googlemhs@uinib.ac.id',
+                'name' => 'Mahasiswa Google',
+            ], 200),
+        ]);
+
+        $this->get(route('login.google.callback', [
+            'state' => $state,
+            'code' => 'fake-code',
+        ]))->assertRedirect(route('mahasiswa.dashboard'));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'googlemhs@uinib.ac.id',
+            'nama' => 'Mahasiswa Google',
+            'role' => 'mahasiswa',
+        ]);
+    }
+
+    public function test_revision_notification_links_to_edit_page(): void
+    {
+        $mahasiswa = $this->mahasiswa();
+        $admin = $this->admin();
+        $prestasi = $this->prestasi($mahasiswa, [
+            'nama_prestasi' => 'Lomba Revisi',
+            'status_verifikasi' => 'menunggu',
+        ]);
+
+        $this->actingAs($admin)->patch(route('admin.verifikasi.proses', $prestasi), [
+            'status_verifikasi' => 'perlu_perbaikan',
+            'catatan_revisi' => 'Mohon unggah ulang sertifikat yang lebih jelas.',
+        ])->assertRedirect(route('admin.verifikasi.show', $prestasi));
+
+        $this->actingAs($mahasiswa)->get(route('mahasiswa.notifikasi.index'))
+            ->assertOk()
+            ->assertSee('Perlu Perbaikan')
+            ->assertSee('Buka Halaman Perbaikan')
+            ->assertSee(route('mahasiswa.prestasi.edit', $prestasi), false);
     }
 }

@@ -25,13 +25,16 @@ class MahasiswaController extends Controller
 
         $mahasiswa = User::query()
             ->where('role', 'mahasiswa')
-            ->when($f['prodi'] ?? null, fn ($q, $p) => $q->where('prodi', $p))
+            ->when($f['prodi'] ?? null, function ($q, $p) {
+                $q->whereRaw('LOWER(TRIM(prodi)) = ?', [strtolower(trim($p))]);
+            })
             ->when($f['q'] ?? null, function ($q, $kata) {
                 $like = '%'.addcslashes($kata, '\\%_').'%';
 
                 $q->where(function ($b) use ($like) {
                     $b->where('nama', 'like', $like)
-                        ->orWhere('nim', 'like', $like);
+                        ->orWhere('nim', 'like', $like)
+                        ->orWhere('prodi', 'like', $like);
                 });
             })
             ->withCount([

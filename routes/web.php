@@ -39,19 +39,41 @@ Route::get('/dashboard', function () {
         return redirect()->route('mahasiswa.dashboard');
     }
 
-    return redirect()->route('login');
+    return redirect()->route('landing');
 })->name('dashboard');
 
 // Pengalihan pilih-peran menuju ke dashboard utama (landing page)
 Route::get('/pilih-peran', fn () => redirect()->route('landing'))->name('pilih-peran');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn () => view('auth.login'))->name('login');
+    Route::get('/login', function () {
+        if (! session()->has('visited_landing')) {
+            return redirect()->route('landing');
+        }
+
+        return view('auth.login');
+    })->name('login');
 
     // Pembatasan percobaan login (NF-08)
     Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:10,1')
         ->name('login.process');
+
+    // Pendaftaran akun baru (Mahasiswa)
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])
+        ->middleware('throttle:10,1')
+        ->name('register.process');
+
+    // Ganti / Lupa Kata Sandi
+    Route::get('/ganti-sandi', [AuthController::class, 'showResetPassword'])->name('password.forgot');
+    Route::post('/ganti-sandi', [AuthController::class, 'resetPassword'])
+        ->middleware('throttle:10,1')
+        ->name('password.forgot.process');
+
+    // Login Google OAuth
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('login.google.callback');
 
     // Fitur Login Cepat (Akun Demo)
     Route::post('/login/quick/{role}', [AuthController::class, 'quickLogin'])

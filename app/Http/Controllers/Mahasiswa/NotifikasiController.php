@@ -14,7 +14,7 @@ class NotifikasiController extends Controller
     {
         $notifikasi = $request->user()
             ->notifikasi()
-            ->with('prestasi:id,nama_prestasi')
+            ->with('prestasi:id,nama_prestasi,status_verifikasi')
             ->latest()
             ->paginate(15);
 

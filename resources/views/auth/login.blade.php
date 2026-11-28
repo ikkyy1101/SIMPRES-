@@ -409,6 +409,15 @@
 
 
 
+            @if (session('status'))
+                <div class="alert alert-success border-0 rounded-3 p-3 mb-4 small" style="background-color: #dcfce7; color: #166534;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>{{ session('status') }}</span>
+                    </div>
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="alert alert-danger border-0 rounded-3 p-3 mb-4 small" style="background-color: #fee2e2; color: #991b1b;">
                     <div class="d-flex align-items-center gap-2 mb-1">
@@ -470,9 +479,9 @@
                             Ingat saya
                         </label>
                     </div>
-                    <a href="javascript:void(0)" onclick="alert('Silakan hubungi administrator fakultas untuk me-reset kata sandi akun Anda.')"
+                    <a href="{{ route('password.forgot') }}"
                        class="small fw-semibold text-decoration-none" style="color: #4057a2;">
-                        Lupa kata sandi?
+                        Lupa / Ganti kata sandi?
                     </a>
                 </div>
 
@@ -489,7 +498,7 @@
                 </div>
 
                 <!-- Tombol SSO Alternatif sesuai Figma Node 38:128 & 38:136 -->
-                <a href="javascript:void(0)" onclick="alert('Fitur login Google terintegrasi sedang dalam penyiapan SSO kampus.')" class="btn-sso-figma">
+                <a href="{{ route('login.google') }}" class="btn-sso-figma">
                     <i class="bi bi-google text-danger sso-icon-brand"></i>
                     <span>Login Dengan Google</span>
                 </a>
@@ -501,7 +510,7 @@
 
                 <!-- Footer Teks Catatan sesuai Figma Node 14:39 -->
                 <div class="footer-note-link">
-                    Belum Memiliki akun? <a href="{{ route('landing') }}#kontak">Hubungi Admin</a>
+                    Belum Memiliki akun? <a href="{{ route('register') }}">Daftar Akun</a>
                 </div>
 
                 <div class="text-center mt-3">

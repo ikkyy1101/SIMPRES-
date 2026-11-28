@@ -9,8 +9,8 @@
 
     <form method="GET" class="row g-2 mb-3">
         <div class="col-md-5">
-            <select name="prodi" class="form-select" aria-label="Program studi">
-                <option value="">Semua program studi</option>
+            <select name="prodi" class="form-select" aria-label="Program studi" onchange="this.form.submit()">
+                <option value="">Semua Jurusan / Program Studi</option>
                 @foreach ($prodiList as $pr)
                     <option value="{{ $pr }}" @selected(($f['prodi'] ?? '') === $pr)>{{ $pr }}</option>
                 @endforeach
